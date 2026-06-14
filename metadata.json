@@ -1,0 +1,8 @@
+{
+  "name": "Remix: قسطیت - مدیریت هوشمند اقساط",
+  "description": "نرم افزار مدیریت اقساط قسطیت - راهکار نوآورانه محاسبه، پیگیری و پرداخت آنلاین اقساط برای کسب‌و‌کارها",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

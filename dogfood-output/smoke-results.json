@@ -1,0 +1,52 @@
+{
+  "results": [
+    {
+      "name": "home loads and renders main Persian H1",
+      "ok": true
+    },
+    {
+      "name": "pricing nav scrolls to pricing section",
+      "ok": true
+    },
+    {
+      "name": "docs navigation renders DocsSection",
+      "ok": true
+    },
+    {
+      "name": "contact navigation renders contact view",
+      "ok": true
+    },
+    {
+      "name": "mobile hamburger opens menu and demo button opens modal",
+      "ok": true
+    }
+  ],
+  "consoleMessages": [
+    {
+      "type": "warning",
+      "text": "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+    },
+    {
+      "type": "warning",
+      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A0802400646D0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content."
+    },
+    {
+      "type": "warning",
+      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A0B02400646D0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content."
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x4df403eeaa00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+    },
+    {
+      "type": "error",
+      "text": "Error loading 3D model: SyntaxError: Unexpected token '<', \"<!doctype \"... is not valid JSON\n    at JSON.parse (<anonymous>)\n    at GLTFLoader.parse (http://127.0.0.1:3000/node_modules/.vite/deps/chunk-JNFMVHOQ.js?v=ac339985:355:21)\n    at Object.onLoad (http://127.0.0.1:3000/node_modules/.vite/deps/chunk-JNFMVHOQ.js?v=ac339985:261:15)\n    at http://127.0.0.1:3000/node_modules/.vite/deps/chunk-U2FQ7DVD.js?v=ac339985:23838:39"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x4df403eeaa00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+    }
+  ],
+  "pageErrors": [],
+  "requestFailures": []
+}
