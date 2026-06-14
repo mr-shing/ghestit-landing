@@ -239,7 +239,7 @@ export default function App() {
           {/* Brand Logo & Name */}
           <a href="/" className="flex items-center gap-3 transition-opacity hover:opacity-90">
             <img 
-              src="src/public/logoghestit.png" 
+              src="/public/logoghestit.png" 
               className="w-13 h-13" 
               alt="Logo" 
             />
