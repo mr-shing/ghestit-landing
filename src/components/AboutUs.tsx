@@ -25,7 +25,7 @@ export default function AboutUs() {
             پلتفرم قسطیت؛ زیرساخت نوآورانه <br />
             <span className="text-[#02A958]">در زمینه فروش اقساطی</span>
           </h1>
-          <p className="text-slate-600 text-base md:text-lg leading-relaxed font-sans font-bold text-justify md:text-center">
+          <p className="text-slate-600 text-base md:text-lg leading-relaxed font-sans text-justify md:text-center">
             پلتفرم قسطیت به عنوان یک زیرساخت نوآورانه در زمینه فروش اقساطی طراحی شده است تا کسب‌وکارها و مشتریان را به شکلی ساده و امن به یکدیگر متصل کند. هدف ما فراهم کردن بستری است که فروشندگان بتوانند کالاها و خدمات خود را به صورت اقساطی به فروش برسانند و خریداران نیز بدون نیاز به دغدغه‌های مالی، اقساط خود را به راحتی و در محیطی امن پرداخت کنند.
           </p>
         </div>
@@ -36,7 +36,7 @@ export default function AboutUs() {
           <div className="max-w-4xl">
             <span className="text-xs font-black text-[#02A958] uppercase tracking-wider block mb-3">اهداف و آرمان‌ها</span>
             <h2 className="text-2xl font-black text-slate-900 mb-4">مأموریت ما</h2>
-            <p className="text-slate-600 leading-relaxed font-sans text-base font-bold text-justify">
+            <p className="text-slate-600 leading-relaxed font-sans text-base text-justify">
               ما در قسطیت با ایجاد یک سیستم شفاف و کاربرپسند به دنبال تسهیل فرآیند خرید و فروش اقساطی هستیم. با این زیرساخت، کسب‌وکارها می‌توانند محصولات و خدمات خود را با شرایط مناسب در اختیار مشتریان قرار دهند و در عین حال خریداران نیز از امکان پرداخت آسان و اقساطی بهره‌مند شوند. قسطیت به نحوی طراحی شده که فرایند پرداخت اقساط در همین پلتفرم انجام شود و کلیه مراحل خرید و پرداخت از ابتدا تا انتها در محیطی واحد صورت گیرد.
             </p>
           </div>
@@ -79,7 +79,7 @@ export default function AboutUs() {
                     <val.icon className="w-5 h-5" />
                   </div>
                   <h3 className="font-black text-base text-slate-100">{val.title}</h3>
-                  <p className="text-slate-400 text-xs leading-relaxed font-sans font-bold text-justify">{val.desc}</p>
+                  <p className="text-slate-400 text-xs leading-relaxed font-sans text-justify">{val.desc}</p>
                 </div>
               ))}
             </div>

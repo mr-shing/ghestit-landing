@@ -365,7 +365,7 @@ export default function App() {
                 <div className="lg:col-span-7 space-y-8 text-right flex flex-col items-start order-2 lg:order-1">
                   <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-50/80 text-[#02A958] border border-emerald-100 rounded-full text-xs font-black backdrop-blur-sm shadow-sm animate-pulse">
                     <Zap className="w-3.5 h-3.5 fill-[#02A958]" />
-                    <span>اولین سامانه یکپارچه پرداخت اقساتاولین سامانه یکپارچه پرداخت اقساط کشور</span>
+                    <span>اولین سامانه یکپارچه پرداخت اقساط کشور</span>
                   </div>
 
                   <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-slate-900 leading-[1.3] tracking-tight">
@@ -839,7 +839,7 @@ export default function App() {
                       <MapPin className="w-5 h-5 text-[#02A958] shrink-0 mt-0.5" />
                       <div>
                         <strong className="block text-slate-800 mb-0.5 font-bold font-sans">دفتر پشتیبانی:</strong>
-                        <span className='font-sans'>کرمان ، خیابان مطهری ، روبروی کوچه 9</span>
+                        <span className='font-sans'>کرمان </span>
                       </div>
                     </div>
 
