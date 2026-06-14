@@ -24,7 +24,7 @@ export default defineConfig(({mode}) => {
     },
      preview: {
        allowedHosts: ['ghestit.com', 'www.ghestit.com'],
-       port: 3006,
+       port: 3008,
        host: '127.0.0.1'
      }
   };
