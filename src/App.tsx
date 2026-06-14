@@ -249,7 +249,7 @@ export default function App() {
           <nav className="hidden md:flex items-center gap-6 lg:gap-8">
             <button 
               onClick={() => navigateToView('home')} 
-              className={`text-sm font-extrabold font-sans cursor-pointer transition-colors ${currentView === 'home' ? 'text-primary' : 'text-slate-600 hover:text-primary'}`}
+              className={`text-sm font-semibold font-sans cursor-pointer transition-colors ${currentView === 'home' ? 'text-primary' : 'text-slate-600 hover:text-primary'}`}
             >
               خانه
             </button>
@@ -267,19 +267,19 @@ export default function App() {
             </button>
             <button 
               onClick={() => navigateToView('docs')} 
-              className={`text-sm font-extrabold font-sans cursor-pointer transition-colors ${currentView === 'docs' ? 'text-primary' : 'text-slate-600 hover:text-primary'}`}
+              className={`text-sm font-semibold font-sans cursor-pointer transition-colors ${currentView === 'docs' ? 'text-primary' : 'text-slate-600 hover:text-primary'}`}
             >
               مستندات آموزشی
             </button>
             <button 
               onClick={() => navigateToView('aboutus')} 
-              className={`text-sm font-extrabold font-sans cursor-pointer transition-colors ${currentView === 'aboutus' ? 'text-primary' : 'text-slate-600 hover:text-primary'}`}
+              className={`text-sm font-semibold font-sans cursor-pointer transition-colors ${currentView === 'aboutus' ? 'text-primary' : 'text-slate-600 hover:text-primary'}`}
             >
               درباره ما
             </button>
             <button 
               onClick={() => navigateToView('contact')} 
-              className={`text-sm font-extrabold font-sans cursor-pointer transition-colors ${currentView === 'contact' ? 'text-primary' : 'text-slate-600 hover:text-primary'}`}
+              className={`text-sm font-semibold font-sans cursor-pointer transition-colors ${currentView === 'contact' ? 'text-primary' : 'text-slate-600 hover:text-primary'}`}
             >
               تماس با ما
             </button>
@@ -297,8 +297,19 @@ export default function App() {
             </a>
           </div>
 
-          {/* Mobile hamburger menu button */}
-          <div className="md:hidden flex items-center">
+          {/* Mobile Actions Area (Payment Button + Hamburger) */}
+          <div className="md:hidden flex items-center gap-2">
+            {/* دکمه پرداخت قسط که در حالت موبایل بالای صفحه کنار منو قرار می‌گیرد */}
+            <a 
+              href="https://panel.ghestit.com/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 bg-[#02A958] hover:bg-[#02944e] text-white text-[11px] font-black rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1 no-underline"
+            >
+              <Coins className="w-3.5 h-3.5" />
+              <span>پرداخت قسط</span>
+            </a>
+
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 text-slate-600 hover:text-slate-950 rounded-lg"
@@ -354,10 +365,10 @@ export default function App() {
                 <div className="lg:col-span-7 space-y-8 text-right flex flex-col items-start order-2 lg:order-1">
                   <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-50/80 text-[#02A958] border border-emerald-100 rounded-full text-xs font-black backdrop-blur-sm shadow-sm animate-pulse">
                     <Zap className="w-3.5 h-3.5 fill-[#02A958]" />
-                    <span>اولین سامانه یکپارچه پرداخت اقساط کشور</span>
+                    <span>اولین سامانه یکپارچه پرداخت اقساتاولین سامانه یکپارچه پرداخت اقساط کشور</span>
                   </div>
 
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black text-slate-900 leading-[1.3] tracking-tight">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-slate-900 leading-[1.3] tracking-tight">
                     قسطیت؛ نرم افزار هوشمند <br />
                     <span className="text-[#02A958] relative inline-block mt-2">
                       مدیریت اقساط
@@ -365,7 +376,7 @@ export default function App() {
                     </span> 
                   </h1>
 
-                  <p className="text-slate-600 text-l l:text-base font-bold leading-relaxed max-w-2xl font-sans text-justify">
+                  <p className="text-slate-600 text-sm l:text-base font-medium leading-relaxed max-w-2xl font-sans text-justify">
                     نرم افزار هوشمند مدیریت اقساط قسطیت راهکاری نوآورانه برای ارائه خدمات و کالاهای اقساطی با شرایط دلخواه و ساده برای کسب‌وکارها است. بدون واسطه و بدون درگیری با چک و حساب‌های دفتری، به آسانی به مشتریانتان اعتبار دهید
                   </p>
 
@@ -437,7 +448,7 @@ export default function App() {
                 <h2 className="text-2xl md:text-3xl font-black text-slate-900 font-sans">
                   چرا کسب‌وکارها قسطیت را انتخاب کرده‌اند؟
                 </h2>
-                <p className="text-slate-500 text-[18px] font-bold mt-3 whitespace-nowrap">
+                <p className="text-slate-500 text-base font-medium mt-3 whitespace-nowrap">
                   با هوشمندسازی پرداخت اقساط، زنجیره فرآیندهای مالی خود را از محاسبات کارمزد تا اعتبارسنجی و وصول اقساط را ساده کنید.
                 </p>
               </div>
@@ -459,10 +470,10 @@ export default function App() {
                       {feat.id === 'f6' && <ShieldCheck className="w-5 h-5" />}
                     </div>
 
-                    <h3 className="text-sm font-extrabold text-slate-800 mb-2 font-sans group-hover:text-primary transition-colors">
+                    <h3 className="text-sm font-semibold text-slate-800 mb-2 font-sans group-hover:text-primary transition-colors">
                       {feat.title}
                     </h3>
-                    <p className="text-[16px] font-bold text-slate-500 leading-relaxed">
+                    <p className="text-sm font-medium text-slate-500 leading-relaxed">
                       {feat.description}
                     </p>
                   </div>
@@ -516,10 +527,9 @@ export default function App() {
                           damping: 22 
                         }
                       }}
-                      /* رفع تداخل پرش: کلاس تداخلی scale-108 کاملاً حذف شد */
                       className={`rounded-3xl p-5 border flex flex-col justify-between relative ${
                         plan.isPopular 
-                          ? 'border-primary bg-primary/5 shadow-md scale-108' 
+                          ? 'border-primary bg-primary/5 shadow-md' 
                           : 'border-slate-150 bg-white/80 backdrop-blur-md shadow-sm'
                       }`}
                     >
@@ -545,7 +555,7 @@ export default function App() {
                                 <>
                                   <span className="text-lg md:text-xl font-extrabold text-slate-800 font-sans flex items-center gap-1.5 whitespace-nowrap">
                                     {plan.price} 
-                                    <span className="text-[12px] text-slate-400 font-bold font-sans">
+                                    <span className="text-[12px] text-slate-400 font-sans">
                                       + مالیات بر ارزش افزوده
                                     </span>
                                   </span>
@@ -570,7 +580,7 @@ export default function App() {
                               ) : (
                                 <X className="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" />
                               )}
-                              <span className="text-[14px] text-slate-600 font-bold font-sans">{feat.text}</span>
+                              <span className="text-[14px] text-slate-600 font-sans">{feat.text}</span>
                             </div>
                           ))}
                         </div>
@@ -622,7 +632,7 @@ export default function App() {
                 <h2 className="text-2xl md:text-3xl font-black text-slate-900">
                   برنامه قسطیت مناسب چه کسب و کار هایی است؟
                 </h2>
-                <p className="text-slate-500 text-xs text-[18px] font-bold mt-3 max-w-2xl mx-auto">
+                <p className="text-slate-500 text-xs text-[18px] mt-3 max-w-2xl mx-auto">
                   با توجه به زیر ساخت کامل و شرایط متنوع ساخت اقساط، این پلتفرم برای تمامی کسب و کار های فروشگاهی و خدماتی مناسب می باشد. همچنین برای توزیع کنندگان عمده نیز مناسب می باشد.
                 </p>
               </div>
@@ -946,100 +956,86 @@ export default function App() {
 
       {/* 10. REAL FOOTER */}
       <footer className="bg-slate-900 text-slate-400 text-xs py-12 border-t border-slate-800/80 mt-20 relative overflow-hidden" dir="rtl">
-      {/* افکت نوری بسیار ملایم در پس‌زمینه فوتر */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#02A958]/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#02A958]/5 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-10">
-        
-        {/* بخش اصلی فوتر: لوگو، منو و نمادها */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-10 border-b border-slate-800/60 items-center">
-          
-          {/* ستون اول (۴ از ۱۲): لوگو و معرفی کوتاه */}
-          <div className="lg:col-span-4 space-y-4 flex flex-col items-center lg:items-start text-center lg:text-right">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/5 rounded-2xl border border-white/10 shadow-inner">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-10 border-b border-slate-800/60 items-center">
+            <div className="lg:col-span-4 space-y-4 flex flex-col items-center lg:items-start text-center lg:text-right">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/5 rounded-2xl border border-white/10 shadow-inner">
+                  <img 
+                    src="/logoghestit.png" 
+                    className="w-14 h-14 object-contain" 
+                    alt="لوگو قسطیت" 
+                  />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-base font-black text-white tracking-wide">قسطیت</h3>
+                  <p className="text-[11px] font-bold text-slate-400">نرم‌افزار هوشمند مدیریت اقساط</p>
+                </div>
+              </div>
+              <p className="text-slate-500 text-[11px] leading-relaxed max-w-sm">
+                زیرساخت نوآورانه و یکپارچه برای تسهیل خرید و فروش اقساطی کالا و خدمات در محیطی کاملاً امن و شفاف.
+              </p>
+            </div>
+
+            <div className="lg:col-span-5 flex flex-wrap justify-center lg:justify-start gap-x-8 gap-y-4 text-[12px] font-black">
+              <button onClick={() => navigateToView('home')} className="text-slate-300 hover:text-[#02A958] transition-colors cursor-pointer py-1">صفحه نخست</button>
+              <button onClick={() => navigateToView('home', 'pricing-section')} className="text-slate-300 hover:text-[#02A958] transition-colors cursor-pointer py-1">پلن‌های قیمت‌گذاری</button>
+              <button onClick={() => navigateToView('docs')} className="text-slate-300 hover:text-[#02A958] transition-colors cursor-pointer py-1">مستندات آموزشی</button>
+              <button onClick={() => navigateToView('aboutus')} className="text-white hover:text-[#02A958] transition-colors cursor-pointer py-1 bg-white/5 px-3 rounded-xl border border-white/5">درباره ما</button>
+            </div>
+
+            <div className="lg:col-span-3 flex justify-center lg:justify-end gap-3">
+              <div className="w-20 h-20 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#02A958]/30 rounded-2xl p-2 flex items-center justify-center transition-all duration-300 group cursor-pointer shadow-md">
                 <img 
-                  src="/logoghestit.png" 
-                  className="w-14 h-14 object-contain" 
-                  alt="لوگو قسطیت" 
+                  src="/enamad.png" 
+                  alt="نماد اعتماد الکترونیکی" 
+                  className="w-full h-full object-contain filter brightness-90 group-hover:brightness-100 transition-all"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const parent = e.currentTarget.parentElement;
+                    if (parent) parent.innerHTML = '<span class="text-[9px] text-slate-500 font-bold text-center">اینماد</span>';
+                  }}
                 />
               </div>
-              <div className="space-y-1">
-                <h3 className="text-base font-black text-white tracking-wide">قسطیت</h3>
-                <p className="text-[11px] font-bold text-slate-400">نرم‌افزار هوشمند مدیریت اقساط</p>
+
+              <div className="w-20 h-20 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#02A958]/30 rounded-2xl p-2 flex items-center justify-center transition-all duration-300 group cursor-pointer shadow-md">
+                <img 
+                  src="/samandehi.png" 
+                  alt="نماد ساماندهی" 
+                  className="w-full h-full object-contain filter brightness-90 group-hover:brightness-100 transition-all"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const parent = e.currentTarget.parentElement;
+                    if (parent) parent.innerHTML = '<span class="text-[9px] text-slate-500 font-bold text-center">ساماندهی</span>';
+                  }}
+                />
               </div>
             </div>
-            <p className="text-slate-500 text-[11px] leading-relaxed max-w-sm">
-              زیرساخت نوآورانه و یکپارچه برای تسهیل خرید و فروش اقساطی کالا و خدمات در محیطی کاملاً امن و شفاف.
-            </p>
           </div>
 
-          {/* ستون دوم (۵ از ۱۲): لینک‌های دسترسی سریع */}
-          <div className="lg:col-span-5 flex flex-wrap justify-center lg:justify-start gap-x-8 gap-y-4 text-[12px] font-black">
-            <button onClick={() => navigateToView('home')} className="text-slate-300 hover:text-[#02A958] transition-colors cursor-pointer py-1">صفحه نخست</button>
-            <button onClick={() => navigateToView('home', 'pricing-section')} className="text-slate-300 hover:text-[#02A958] transition-colors cursor-pointer py-1">پلن‌های قیمت‌گذاری</button>
-            <button onClick={() => navigateToView('docs')} className="text-slate-300 hover:text-[#02A958] transition-colors cursor-pointer py-1">مستندات آموزشی</button>
-            <button onClick={() => navigateToView('aboutus')} className="text-white hover:text-[#02A958] transition-colors cursor-pointer py-1 bg-white/5 px-3 rounded-xl border border-white/5">درباره ما</button>
-            {/* <button onClick={() => navigateToView('contact')} className="text-slate-300 hover:text-[#02A958] transition-colors cursor-pointer py-1">دفتر مرکزی</button> */}
-          </div>
-
-          {/* ستون سوم (۳ از ۱۲): محل قرارگیری نمادهای اعتماد */}
-          <div className="lg:col-span-3 flex justify-center lg:justify-end gap-3">
-            {/* نماد اول (اینماد) */}
-            <div className="w-20 h-20 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#02A958]/30 rounded-2xl p-2 flex items-center justify-center transition-all duration-300 group cursor-pointer shadow-md">
-              <img 
-                src="/enamad.png" 
-                alt="نماد اعتماد الکترونیکی" 
-                className="w-full h-full object-contain filter brightness-90 group-hover:brightness-100 transition-all"
-                onError={(e) => {
-                  // در صورت عدم وجود عکس، یک باکس با متن جایگزین شیک نمایش داده شود
-                  e.currentTarget.style.display = 'none';
-                  const parent = e.currentTarget.parentElement;
-                  if (parent) parent.innerHTML = '<span class="text-[9px] text-slate-500 font-bold text-center">اینماد</span>';
-                }}
-              />
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] font-bold text-slate-500">
+            <div className="flex items-center gap-2 text-center md:text-right">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 inline-block shrink-0" />
+              <span>تمامی خدمات برنامه قسطیت تابع قوانین و مقررات جمهوری اسلامی ایران است.</span>
             </div>
-
-            {/* نماد دوم (ساماندهی) */}
-            <div className="w-20 h-20 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#02A958]/30 rounded-2xl p-2 flex items-center justify-center transition-all duration-300 group cursor-pointer shadow-md">
-              <img 
-                src="/samandehi.png" 
-                alt="نماد ساماندهی" 
-                className="w-full h-full object-contain filter brightness-90 group-hover:brightness-100 transition-all"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  const parent = e.currentTarget.parentElement;
-                  if (parent) parent.innerHTML = '<span class="text-[9px] text-slate-500 font-bold text-center">ساماندهی</span>';
-                }}
-              />
+            
+            <div className="text-center md:text-left text-slate-500 font-medium">
+              &copy; با احترام، حق نشر تنها متعلق به  
+              <a 
+                href="https://kimgroup.ir/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-slate-300 hover:text-[#02A958] transition-colors duration-200 mx-1 font-black"
+              >
+                کیمیاگران هوشمند تخت جمشید
+              </a>
+              می‌باشد.
             </div>
           </div>
-
         </div>
-
-        {/* بخش فوتر پایینی: کپی‌رایت و قوانین حقوقی */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] font-bold text-slate-500">
-          <div className="flex items-center gap-2 text-center md:text-right">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 inline-block shrink-0" />
-            <span>تمامی خدمات برنامه قسطیت تابع قوانین و مقررات جمهوری اسلامی ایران است.</span>
-          </div>
-          
-          <div className="text-center md:text-left text-slate-500 font-medium">
-            &copy; با احترام، حق نشر تنها متعلق به  
-            <a 
-              href="https://kimgroup.ir/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-slate-300 hover:text-[#02A958] transition-colors duration-200 mx-1 font-black"
-            >
-              کیمیاگران هوشمند تخت جمشید
-            </a>
-            می‌باشد.
-          </div>
-        </div>
-
-      </div>
-    </footer>
+      </footer>
 
       {/* Demo RequestDashboard Interactive Overlay Modal */}
       <DemoRequestModal 
@@ -1047,6 +1043,16 @@ export default function App() {
         onClose={() => setIsDemoOpen(false)} 
       />
 
+      {/* دکمه شناور پایین صفحه (فقط در حالت دسکتاپ نمایش داده می‌شود) */}
+      <a 
+        href="https://panel.ghestit.com/" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="hidden md:flex fixed bottom-6 left-6 z-50 px-6 py-3 bg-[#02A958] hover:bg-[#02944e] text-white rounded-full shadow-2xl shadow-emerald-500/30 transition-all duration-300 hover:-translate-y-1 active:scale-95 items-center gap-2 cursor-pointer no-underline"
+      >
+        <Coins className="w-4 h-4" />
+        <span>پرداخت قسط</span>
+      </a>
     </div>
   );
 }
