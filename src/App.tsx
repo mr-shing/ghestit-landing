@@ -448,7 +448,7 @@ export default function App() {
                 <h2 className="text-2xl md:text-3xl font-black text-slate-900 font-sans">
                   چرا کسب‌وکارها قسطیت را انتخاب کرده‌اند؟
                 </h2>
-                <p className="text-slate-500 text-base font-medium mt-3 whitespace-nowrap">
+                <p className="text-slate-600 text-sm l:text-base font-medium leading-relaxed max-w-2xl font-sans text-justify">
                   با هوشمندسازی پرداخت اقساط، زنجیره فرآیندهای مالی خود را از محاسبات کارمزد تا اعتبارسنجی و وصول اقساط را ساده کنید.
                 </p>
               </div>
@@ -987,19 +987,21 @@ export default function App() {
             </div>
 
             <div className="lg:col-span-3 flex justify-center lg:justify-end gap-3">
-              <div className="w-20 h-20 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#02A958]/30 rounded-2xl p-2 flex items-center justify-center transition-all duration-300 group cursor-pointer shadow-md">
-                <img 
-                  src="/enamad.png" 
-                  alt="نماد اعتماد الکترونیکی" 
-                  className="w-full h-full object-contain filter brightness-90 group-hover:brightness-100 transition-all"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    const parent = e.currentTarget.parentElement;
-                    if (parent) parent.innerHTML = '<span class="text-[9px] text-slate-500 font-bold text-center">اینماد</span>';
-                  }}
-                />
-              </div>
-
+        <div className="text-center mt-4">
+  <a 
+    referrerPolicy="origin" 
+    target="_blank" 
+    href="https://trustseal.enamad.ir/?id=528242&Code=74pEs6XcL5NXe46xkHU1nmUUi9truKGG"
+    rel="noopener noreferrer"
+  >
+    <img 
+      referrerPolicy="origin" 
+      src="https://trustseal.enamad.ir/logo.aspx?id=528242&Code=74pEs6XcL5NXe46xkHU1nmUUi9truKGG" 
+      alt="enamad" 
+      style={{ cursor: 'pointer', height: '55px' }} 
+    />
+  </a>
+</div>
               <div className="w-20 h-20 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#02A958]/30 rounded-2xl p-2 flex items-center justify-center transition-all duration-300 group cursor-pointer shadow-md">
                 <img 
                   src="/samandehi.png" 
