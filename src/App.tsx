@@ -48,12 +48,14 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [selectedPlanDetail, setSelectedPlanDetail] = useState<string | null>(null);
   /* ۱. آپدیت تایپ وضعیت برای پشتیبانی از صفحه جدید */
-  const [currentView, setCurrentView] = useState<'home' | 'docs' | 'contact' | 'aboutus'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'docs' | 'contact' | 'aboutus' | 'articles'>('home');
+  const [selectedArticleUrl, setSelectedArticleUrl] = useState<string | null>(null);
 
   // Flexible view and smooth scroll navigation helper
-  const navigateToView = (view: 'home' | 'docs' | 'contact' | 'aboutus', anchorId?: string) => {
+  const navigateToView = (view: 'home' | 'docs' | 'contact' | 'aboutus' | 'articles', anchorId?: string) => {
     setCurrentView(view);
     setMobileMenuOpen(false);
+    setSelectedArticleUrl(null);
     window.scrollTo({ top: 0, behavior: 'instant' as any });
     
     if (anchorId) {
@@ -224,6 +226,12 @@ export default function App() {
     setIsDemoOpen(true);
   };
 
+  const articles = [
+    { id: 'what-is-ghestit', title: 'تاثیر فروش اقساطی در رشد فروش', href: '/articles/installment-sales-impact.html' },
+    { id: 'how-ghestit-improves-productivity', title: 'تفاوت کارمزد بانکی و کارمزد بازاری', href: '/articles/bank-vs-market-fees.html' },
+    { id: 'privacy-performance-security', title: "چالش های فروش اقساطی در ایران", href: '/articles/installment-sales-challenges-iran.html' }
+  ];
+
   return (
     <div className="min-h-screen bg-[#d1cfcf]/40 flex flex-col font-sans selection:bg-[#02A958] selection:text-white relative z-10" dir="rtl" id="home">
       
@@ -276,6 +284,12 @@ export default function App() {
               className={`text-sm font-semibold font-sans cursor-pointer transition-colors ${currentView === 'aboutus' ? 'text-primary' : 'text-slate-600 hover:text-primary'}`}
             >
               درباره ما
+            </button>
+            <button 
+              onClick={() => navigateToView('articles')}
+              className={`text-sm font-semibold font-sans cursor-pointer transition-colors ${currentView === 'articles' ? 'text-primary' : 'text-slate-600 hover:text-primary'}`}
+            >
+              مقالات
             </button>
             <button 
               onClick={() => navigateToView('contact')} 
@@ -334,6 +348,7 @@ export default function App() {
               <button onClick={() => navigateToView('home', 'pricing-section')} className="block w-full text-right py-2 text-xs font-bold text-slate-700">لیست قیمت</button>
               <button onClick={() => navigateToView('docs')} className={`block w-full text-right py-2 text-xs font-bold ${currentView === 'docs' ? 'text-primary' : 'text-slate-700'}`}>مستندات آموزشی</button>
               <button onClick={() => navigateToView('aboutus')} className={`block w-full text-right py-2 text-xs font-bold ${currentView === 'aboutus' ? 'text-primary' : 'text-slate-700'}`}>درباره ما</button>
+              <button onClick={() => navigateToView('articles')} className={`block w-full text-right py-2 text-xs font-bold ${currentView === 'articles' ? 'text-primary' : 'text-slate-700'}`}>مقالات</button>
               <button onClick={() => navigateToView('contact')} className={`block w-full text-right py-2 text-xs font-bold ${currentView === 'contact' ? 'text-primary' : 'text-slate-700'}`}>تماس با ما</button>
               <div className="pt-2">
                 <button
@@ -555,7 +570,7 @@ export default function App() {
                                 <>
                                   <span className="text-lg md:text-xl font-extrabold text-slate-800 font-sans flex items-center gap-1.5 whitespace-nowrap">
                                     {plan.price} 
-                                    <span className="text-[12px] text-slate-400 font-sans">
+                                    <span className="text-[10px] text-slate-400 font-sans">
                                       + مالیات بر ارزش افزوده
                                     </span>
                                   </span>
@@ -736,6 +751,63 @@ export default function App() {
             </div>
           </section>
         </>
+      ) : currentView === 'articles' ? (
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className="py-12 relative overflow-hidden text-right"
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/95 backdrop-blur-md p-4 rounded-3xl border border-slate-100 shadow-sm gap-4">
+              <div className="space-y-1">
+                <span className="text-[10px] text-slate-400 font-extrabold block text-right">سامانه قسطیت</span>
+                <div className="flex items-center gap-2 text-xs font-bold justify-start">
+                  <button onClick={() => navigateToView('home')} className="text-slate-500 hover:text-primary transition-colors cursor-pointer">خانه</button>
+                  <span className="text-slate-300">/</span>
+                  <span className="text-slate-800 font-black">مقالات</span>
+                </div>
+              </div>
+              <button 
+                onClick={() => navigateToView('home')} 
+                className="text-xs font-extrabold text-[#02A958] hover:text-primary border border-primary/20 hover:bg-primary/5 px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 self-end sm:self-auto"
+              >
+                <span>بازگشت به خانه قسطیت</span>
+                <ArrowLeft className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              <div className="lg:col-span-4 space-y-6">
+                <div className="bg-white/95 backdrop-blur-md p-6 rounded-3xl border border-slate-100 shadow-xl space-y-5">
+                  <h3 className="text-md md:text-lg font-black text-slate-900 leading-tight">مقالات </h3>
+                  <p className="text-xs text-slate-500 leading-relaxed font-sans font-medium text-right">لیستی از مقالات مفید </p>
+
+                  <ul className="mt-4 space-y-2">
+                    {articles.map((a) => (
+                      <li key={a.id}>
+                        <button
+                          onClick={() => setSelectedArticleUrl(a.href)}
+                          className={`w-full text-right text-sm font-bold py-2 rounded-lg transition-colors ${selectedArticleUrl === a.href ? 'text-primary' : 'text-slate-700 hover:text-primary'}`}
+                        >
+                          {a.title}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="lg:col-span-8 bg-white/95 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-slate-100 shadow-xl space-y-6">
+                {selectedArticleUrl ? (
+                  <iframe src={selectedArticleUrl} className="w-full h-[70vh] border-0" title="article" />
+                ) : (
+                  <div className="p-8 text-slate-500">لطفاً یک مقاله را از لیست سمت چپ انتخاب کنید.</div>
+                )}
+              </div>
+            </div>
+          </div>
+        </motion.div>
       ) : currentView === 'docs' ? (
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -983,7 +1055,8 @@ export default function App() {
               <button onClick={() => navigateToView('home')} className="text-slate-300 hover:text-[#02A958] transition-colors cursor-pointer py-1">صفحه نخست</button>
               <button onClick={() => navigateToView('home', 'pricing-section')} className="text-slate-300 hover:text-[#02A958] transition-colors cursor-pointer py-1">پلن‌های قیمت‌گذاری</button>
               <button onClick={() => navigateToView('docs')} className="text-slate-300 hover:text-[#02A958] transition-colors cursor-pointer py-1">مستندات آموزشی</button>
-              <button onClick={() => navigateToView('aboutus')} className="text-white hover:text-[#02A958] transition-colors cursor-pointer py-1 bg-white/5 px-3 rounded-xl border border-white/5">درباره ما</button>
+              <button onClick={() => navigateToView('articles')} className="text-slate-300 hover:text-[#02A958] transition-colors cursor-pointer py-1">مقالات</button>
+              <button onClick={() => navigateToView('aboutus')} className="text-white hover:text-[#02A958] transition-colors cursor-pointer py-1">درباره ما</button>
             </div>
 
             <div className="lg:col-span-3 flex justify-center lg:justify-end gap-3">
@@ -1002,7 +1075,7 @@ export default function App() {
     />
   </a>
 </div>
-              <div className="w-20 h-20 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#02A958]/30 rounded-2xl p-2 flex items-center justify-center transition-all duration-300 group cursor-pointer shadow-md">
+              {/* <div className="w-20 h-20 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#02A958]/30 rounded-2xl p-2 flex items-center justify-center transition-all duration-300 group cursor-pointer shadow-md">
                 <img 
                   src="/samandehi.png" 
                   alt="نماد ساماندهی" 
@@ -1013,7 +1086,7 @@ export default function App() {
                     if (parent) parent.innerHTML = '<span class="text-[9px] text-slate-500 font-bold text-center">ساماندهی</span>';
                   }}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
 
