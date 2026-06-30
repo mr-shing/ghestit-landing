@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ShieldCheck, Headphones, Smartphone, Infinity, ArrowLeft, Sparkles } from 'lucide-react';
+import { panelUrl } from '../lib/config';
 
 export default function AboutUs() {
   return (
@@ -91,7 +92,7 @@ export default function AboutUs() {
           <h3 className="text-lg md:text-xl font-black text-slate-800 mb-2">به ما بپیوندید و تجربه‌ای متفاوت از خرید و فروش اقساطی را داشته باشید</h3>
           <p className="text-slate-500 text-xs font-bold mb-6 font-sans">آماده هوشمندسازی کانال‌های فروش و اعتبارسنجی خود هستید؟</p>
           <a 
-            href="https://panel.ghestit.com/company/create?type=1" 
+            href={panelUrl('/company/create?type=1')} 
             target="_blank" 
             rel="noopener noreferrer" 
             className="inline-flex items-center gap-2 px-8 py-4 bg-[#02A958] hover:bg-[#02904F] text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-emerald-500/10 active:scale-95 no-underline"

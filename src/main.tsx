@@ -1,10 +1,56 @@
-import {StrictMode} from 'react';
-import {createRoot} from 'react-dom/client';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import App from './App.tsx';
 import './index.css';
 
+import { AuthProvider } from './auth/AuthContext';
+import ProtectedRoute from './auth/ProtectedRoute';
+import Login from './pages/auth/Login';
+import Terms from './pages/Terms';
+import AppLayout from './pages/app/AppLayout';
+import Installments from './pages/app/Installments';
+import Credits from './pages/app/Credits';
+import Companies from './pages/app/Companies';
+import CreateCompany from './pages/app/CreateCompany';
+import Tickets from './pages/app/Tickets';
+import TicketDetail from './pages/app/TicketDetail';
+import ChangePassword from './pages/app/ChangePassword';
+import PaymentResult from './pages/app/PaymentResult';
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          {/* Marketing site */}
+          <Route path="/" element={<App />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/terms" element={<Terms />} />
+
+          {/* Ported customer app (auth required) */}
+          <Route
+            path="/app"
+            element={
+              <ProtectedRoute>
+                <AppLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="installments" replace />} />
+            <Route path="installments" element={<Installments />} />
+            <Route path="credits" element={<Credits />} />
+            <Route path="companies" element={<Companies />} />
+            <Route path="companies/create" element={<CreateCompany />} />
+            <Route path="tickets" element={<Tickets />} />
+            <Route path="tickets/:id" element={<TicketDetail />} />
+            <Route path="change-password" element={<ChangePassword />} />
+            <Route path="payment-result" element={<PaymentResult />} />
+          </Route>
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   </StrictMode>,
 );

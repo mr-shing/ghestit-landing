@@ -42,11 +42,40 @@ import DocsSection from './components/DocsSection';
 import AboutUs from './components/AboutUs';
 import { Plan, FeatureItem } from './types';
 import GhestitVisual from './components/GhestitVisual';
+import { Link } from 'react-router-dom';
+import { panelUrl } from './lib/config';
+import { api, ApiError } from './lib/api';
 
 export default function App() {
   const [isDemoOpen, setIsDemoOpen] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [selectedPlanDetail, setSelectedPlanDetail] = useState<string | null>(null);
+  const [consultBusy, setConsultBusy] = useState<boolean>(false);
+
+  // Consultation/lead form -> stored in MongoDB, reviewed in the admin panel.
+  const submitConsultation = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const business = String(fd.get('business') ?? '');
+    const website = String(fd.get('website') ?? '');
+    const needs = String(fd.get('needs') ?? '');
+    setConsultBusy(true);
+    try {
+      await api.post('site/contact', {
+        name: String(fd.get('name') ?? ''),
+        phone: String(fd.get('phone') ?? ''),
+        subject: business ? `مشاوره: ${business}` : 'درخواست مشاوره',
+        body: [needs, website && `وب‌سایت: ${website}`].filter(Boolean).join('\n'),
+      }, { auth: false });
+      form.reset();
+      alert('درخواست همکاری و مشاوره صنف شما با موفقیت ثبت گردید. به زودی با شماره همراه وارد شده تماس خواهیم گرفت.');
+    } catch (err) {
+      alert(err instanceof ApiError ? err.message : 'خطا در ثبت درخواست. لطفاً دوباره تلاش کنید.');
+    } finally {
+      setConsultBusy(false);
+    }
+  };
   /* ۱. آپدیت تایپ وضعیت برای پشتیبانی از صفحه جدید */
   const [currentView, setCurrentView] = useState<'home' | 'docs' | 'contact' | 'aboutus' | 'articles'>('home');
   const [selectedArticleUrl, setSelectedArticleUrl] = useState<string | null>(null);
@@ -76,7 +105,7 @@ export default function App() {
       price: '۱۲ میلیون تومان',
       originalPriceNum: 12000000,
       period: 'در سال',
-      link: 'https://panel.ghestit.com/company/create?type=2',
+      link: panelUrl('/company/create?type=2'),
       features: [
         { text: 'محاسبه خودکار اقساط', included: true },
         { text: 'محاسبه خودکار جریمه دیرکرد', included: true },
@@ -96,7 +125,7 @@ export default function App() {
       price: '۱۸ میلیون تومان',
       originalPriceNum: 18000000,
       period: 'در سال',
-      link: 'https://panel.ghestit.com/company/create?type=3',
+      link: panelUrl('/company/create?type=3'),
       features: [
         { text: 'محاسبه خودکار اقساط', included: true },
         { text: 'محاسبه خودکار جریمه دیرکرد', included: true },
@@ -117,7 +146,7 @@ export default function App() {
       originalPriceNum: 28000000,
       period: 'در سال',
       isPopular: true,
-      link: 'https://panel.ghestit.com/company/create?type=3',
+      link: panelUrl('/company/create?type=3'),
       features: [
         { text: 'محاسبه خودکار اقساط', included: true },
         { text: 'محاسبه خودکار جریمه دیرکرد', included: true },
@@ -301,13 +330,20 @@ export default function App() {
 
           {/* Action Call to Button */}
           <div className="hidden md:flex items-center gap-3">
+            <Link
+              to="/login"
+              className="px-6 py-3.5 border border-primary text-primary hover:bg-primary/5 text-xs font-black rounded-xl transition-all active:scale-95 flex items-center gap-2 cursor-pointer no-underline inline-flex"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              ورود
+            </Link>
             <a
-              href="https://panel.ghestit.com/company/create?type=1"
-              target="_blank"                 
-              rel="noopener noreferrer"       
+              href={panelUrl('/company/create?type=1')}
+              target="_blank"
+              rel="noopener noreferrer"
               className="px-6 py-3.5 bg-[#02A958] hover:bg-primary-hover text-white text-xs font-black rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center gap-2 cursor-pointer no-underline inline-flex"
             >
-               درخواست نسخه دمو 
+               درخواست نسخه دمو
             </a>
           </div>
 
@@ -315,7 +351,7 @@ export default function App() {
           <div className="md:hidden flex items-center gap-2">
             {/* دکمه پرداخت قسط که در حالت موبایل بالای صفحه کنار منو قرار می‌گیرد */}
             <a 
-              href="https://panel.ghestit.com/" 
+              href={panelUrl('/')} 
               target="_blank" 
               rel="noopener noreferrer"
               className="px-3 py-1.5 bg-[#02A958] hover:bg-[#02944e] text-white text-[11px] font-black rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1 no-underline"
@@ -350,7 +386,15 @@ export default function App() {
               <button onClick={() => navigateToView('aboutus')} className={`block w-full text-right py-2 text-xs font-bold ${currentView === 'aboutus' ? 'text-primary' : 'text-slate-700'}`}>درباره ما</button>
               <button onClick={() => navigateToView('articles')} className={`block w-full text-right py-2 text-xs font-bold ${currentView === 'articles' ? 'text-primary' : 'text-slate-700'}`}>مقالات</button>
               <button onClick={() => navigateToView('contact')} className={`block w-full text-right py-2 text-xs font-bold ${currentView === 'contact' ? 'text-primary' : 'text-slate-700'}`}>تماس با ما</button>
-              <div className="pt-2">
+              <div className="pt-2 space-y-2">
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-1.5 w-full border border-primary text-primary text-xs font-bold py-2.5 rounded-xl no-underline"
+                >
+                  <Lock className="w-3.5 h-3.5" />
+                  ورود به حساب
+                </Link>
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
@@ -397,7 +441,7 @@ export default function App() {
 
                   <div className="flex flex-wrap gap-4 pt-2 w-full sm:w-auto">
                     <a
-                      href="https://panel.ghestit.com/company/create?type=1"
+                      href={panelUrl('/company/create?type=1')}
                       target="_blank"                 
                       rel="noopener noreferrer"       
                       className="group px-8 py-4 bg-[#02A958] hover:bg-[#02944e] text-white text-sm font-bold rounded-2xl shadow-xl shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-0.5 active:scale-95 flex items-center gap-3 cursor-pointer no-underline w-full sm:w-auto justify-center"
@@ -526,10 +570,10 @@ export default function App() {
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-100px" }}
-                      transition={{ 
-                        type: "linear",
-                        duration: 0.4, 
-                        delay: index * 0.08 
+                      transition={{
+                        ease: "linear",
+                        duration: 0.4,
+                        delay: index * 0.08
                       }}
                       whileHover={{ 
                         y: -10, 
@@ -711,7 +755,7 @@ export default function App() {
                   <div className="pt-6 border-t border-slate-100 mt-6 flex justify-between items-center">
                     <span className="text-[10px] text-slate-400 font-mono"></span>
                     <a 
-                      href="https://panel.ghestit.com/company/create?type=1" 
+                      href={panelUrl('/company/create?type=1')} 
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs font-bold text-primary hover:text-primary-hover flex items-center gap-1 cursor-pointer"
@@ -955,28 +999,24 @@ export default function App() {
                   <p className="text-xs text-slate-400 mt-1 font-sans">پس از ارسال اطلاعات، کارشناسان ما ظرف کمتر از ۲۴ ساعت جهت ایجاد بستر دمو تماس می‌گیرند.</p>
                 </div>
 
-                <form 
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    alert('درخواست همکاری و مشاوره صنف شما با موفقیت در هسته قسطیت ثبت گردید. به زودی با شماره همراه وارد شده تماس خواهیم گرفت.');
-                  }}
-                  className="space-y-4 text-right"
-                >
+                <form onSubmit={submitConsultation} className="space-y-4 text-right">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-[10px] text-slate-500 block mb-1.5 font-extrabold text-right">نام رابط / دارنده کسب‌وکار *</label>
-                      <input 
-                        type="text" 
-                        required 
+                      <input
+                        type="text"
+                        name="name"
+                        required
                         placeholder="مثلاً: مهران کریمی"
                         className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-slate-800 font-sans font-medium text-right"
                       />
                     </div>
                     <div>
                       <label className="text-[10px] text-slate-500 block mb-1.5 font-extrabold text-right">نام صنف یا فروشگاه *</label>
-                      <input 
-                        type="text" 
-                        required 
+                      <input
+                        type="text"
+                        name="business"
+                        required
                         placeholder="مثلاً: فروشگاه فرش شاهکار"
                         className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-slate-800 font-sans font-medium text-right"
                       />
@@ -986,9 +1026,10 @@ export default function App() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-[10px] text-slate-500 block mb-1.5 font-extrabold text-right">تلفن همراه فعال *</label>
-                      <input 
-                        type="tel" 
-                        required 
+                      <input
+                        type="tel"
+                        name="phone"
+                        required
                         pattern="09[0-9]{9}"
                         placeholder="مثلاً: ۰۹۱۲۳۴۵۶۷۸۹"
                         className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-left font-mono focus:outline-none focus:border-primary text-slate-800"
@@ -996,8 +1037,9 @@ export default function App() {
                     </div>
                     <div>
                       <label className="text-[10px] text-slate-500 block mb-1.5 font-extrabold text-right">آدرس وب‌سایت (اختیاری)</label>
-                      <input 
-                        type="url" 
+                      <input
+                        type="url"
+                        name="website"
                         placeholder="مثلاً: https://shahkarcarpet.ir"
                         className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-left font-mono focus:outline-none focus:border-primary text-slate-800"
                       />
@@ -1006,8 +1048,9 @@ export default function App() {
 
                   <div>
                     <label className="text-[10px] text-slate-500 block mb-1.5 font-extrabold text-right">موضوع مشاوره و نیازهای صنف شما</label>
-                    <textarea 
+                    <textarea
                       rows={4}
+                      name="needs"
                       placeholder="چه خدمتی، نحوه سفته، سود یا کارمزد مد نظرتان است، اینجا برای ما بنویسید..."
                       className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-slate-800 font-sans font-medium text-right"
                     />
@@ -1015,9 +1058,10 @@ export default function App() {
 
                   <button
                     type="submit"
-                    className="w-full py-3.5 bg-[#02A958] hover:bg-primary-hover text-white text-xs font-black rounded-xl shadow-lg transition-all transform active:scale-95 cursor-pointer text-center"
+                    disabled={consultBusy}
+                    className="w-full py-3.5 bg-[#02A958] hover:bg-primary-hover text-white text-xs font-black rounded-xl shadow-lg transition-all transform active:scale-95 cursor-pointer text-center disabled:opacity-60"
                   >
-                    ارسال فرم مشاوره قسطیت
+                    {consultBusy ? 'در حال ارسال…' : 'ارسال فرم مشاوره قسطیت'}
                   </button>
                 </form>
               </div>
@@ -1120,7 +1164,7 @@ export default function App() {
 
       {/* دکمه شناور پایین صفحه (فقط در حالت دسکتاپ نمایش داده می‌شود) */}
       <a 
-        href="https://panel.ghestit.com/" 
+        href={panelUrl('/')} 
         target="_blank" 
         rel="noopener noreferrer"
         className="hidden md:flex fixed bottom-6 left-6 z-50 px-6 py-3 bg-[#02A958] hover:bg-[#02944e] text-white rounded-full shadow-2xl shadow-emerald-500/30 transition-all duration-300 hover:-translate-y-1 active:scale-95 items-center gap-2 cursor-pointer no-underline"
