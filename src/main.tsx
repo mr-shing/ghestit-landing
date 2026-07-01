@@ -8,6 +8,7 @@ import { AuthProvider } from './auth/AuthContext';
 import ProtectedRoute from './auth/ProtectedRoute';
 import Login from './pages/auth/Login';
 import Terms from './pages/Terms';
+import Download from './pages/Download';
 import AppLayout from './pages/app/AppLayout';
 import Installments from './pages/app/Installments';
 import Credits from './pages/app/Credits';
@@ -27,6 +28,8 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/" element={<App />} />
           <Route path="/login" element={<Login />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/download" element={<Download />} />
+          <Route path="/install" element={<Navigate to="/download" replace />} />
 
           {/* Ported customer app (auth required) */}
           <Route

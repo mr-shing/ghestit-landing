@@ -49,9 +49,13 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 function persistAuth(json: any): void {
   const token = json?.token ?? json?.data?.token;
-  const refresh = json?.refresh_token ?? json?.data?.refresh_token ?? null;
+  // The api should send refresh_token as a string, but older builds returned the
+  // whole UserRefreshTokens record — normalize either shape to the token string.
+  const rawRefresh = json?.refresh_token ?? json?.data?.refresh_token ?? null;
+  const refresh =
+    rawRefresh && typeof rawRefresh === 'object' ? rawRefresh.urf_token ?? null : rawRefresh;
   const user = json?.user ?? json?.data?.user ?? null;
-  if (token) tokenStore.set(String(token), refresh, user);
+  if (token) tokenStore.set(String(token), refresh ? String(refresh) : null, user);
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
