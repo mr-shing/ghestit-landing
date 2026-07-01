@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { Building2, CreditCard, KeyRound, LayoutList, LifeBuoy, LogOut, ChevronDown } from 'lucide-react';
+import { Building2, CreditCard, KeyRound, LayoutList, LifeBuoy, LogOut, ChevronDown, Download } from 'lucide-react';
 import { useAuth, userDisplayName } from '../../auth/AuthContext';
 
 const navItems = [
@@ -112,6 +112,13 @@ function ProfileMenu({ name, username }: { name: string; username?: string }) {
             className="flex items-center gap-2.5 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"
           >
             <KeyRound size={17} /> تغییر رمز عبور
+          </NavLink>
+          <NavLink
+            to="/download"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2.5 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"
+          >
+            <Download size={17} /> دانلود اپلیکیشن
           </NavLink>
           <button
             onClick={handleLogout}

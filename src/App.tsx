@@ -33,7 +33,9 @@ import {
   CreditCard,
   Infinity,
   FunnelPlus,
-  ListChecks
+  ListChecks,
+  Download,
+  LayoutDashboard
 } from 'lucide-react';
 
 import ThreeCanvas from './components/ThreeCanvas';
@@ -44,7 +46,7 @@ import { Plan, FeatureItem } from './types';
 import GhestitVisual from './components/GhestitVisual';
 import { Link } from 'react-router-dom';
 import { panelUrl } from './lib/config';
-import { api, ApiError } from './lib/api';
+import { api, ApiError, tokenStore } from './lib/api';
 import { useFieldErrors, FieldError } from './pages/app/shared';
 
 export default function App() {
@@ -52,6 +54,7 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [selectedPlanDetail, setSelectedPlanDetail] = useState<string | null>(null);
   const [consultBusy, setConsultBusy] = useState<boolean>(false);
+  const loggedIn = !!tokenStore.token; // hide login CTA + route to panel when signed in
   const { errors: consultErrors, clearError: clearConsultError, reset: resetConsultErrors, showErrors: showConsultErrors, showApiErrors: showConsultApiErrors } =
     useFieldErrors(['name', 'business', 'phone']);
 
@@ -345,12 +348,29 @@ export default function App() {
           {/* Action Call to Button */}
           <div className="hidden md:flex items-center gap-3">
             <Link
-              to="/login"
-              className="px-6 py-3.5 border border-primary text-primary hover:bg-primary/5 text-xs font-black rounded-xl transition-all active:scale-95 flex items-center gap-2 cursor-pointer no-underline inline-flex"
+              to="/download"
+              className="px-4 py-3.5 border border-slate-200 text-slate-600 hover:border-primary hover:text-primary text-xs font-black rounded-xl transition-all active:scale-95 flex items-center gap-2 cursor-pointer no-underline inline-flex"
             >
-              <Lock className="w-3.5 h-3.5" />
-              ورود
+              <Download className="w-3.5 h-3.5" />
+              دانلود اپلیکیشن
             </Link>
+            {loggedIn ? (
+              <Link
+                to="/app/installments"
+                className="px-6 py-3.5 border border-primary text-primary hover:bg-primary/5 text-xs font-black rounded-xl transition-all active:scale-95 flex items-center gap-2 cursor-pointer no-underline inline-flex"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                پنل کاربری
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="px-6 py-3.5 border border-primary text-primary hover:bg-primary/5 text-xs font-black rounded-xl transition-all active:scale-95 flex items-center gap-2 cursor-pointer no-underline inline-flex"
+              >
+                <Lock className="w-3.5 h-3.5" />
+                ورود
+              </Link>
+            )}
             <a
               href={panelUrl('/company/create?type=1')}
               target="_blank"
@@ -402,13 +422,32 @@ export default function App() {
               <button onClick={() => navigateToView('contact')} className={`block w-full text-right py-2 text-xs font-bold ${currentView === 'contact' ? 'text-primary' : 'text-slate-700'}`}>تماس با ما</button>
               <div className="pt-2 space-y-2">
                 <Link
-                  to="/login"
+                  to="/download"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-1.5 w-full border border-primary text-primary text-xs font-bold py-2.5 rounded-xl no-underline"
+                  className="flex items-center justify-center gap-1.5 w-full border border-slate-200 text-slate-600 text-xs font-bold py-2.5 rounded-xl no-underline"
                 >
-                  <Lock className="w-3.5 h-3.5" />
-                  ورود به حساب
+                  <Download className="w-3.5 h-3.5" />
+                  دانلود اپلیکیشن
                 </Link>
+                {loggedIn ? (
+                  <Link
+                    to="/app/installments"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-center gap-1.5 w-full border border-primary text-primary text-xs font-bold py-2.5 rounded-xl no-underline"
+                  >
+                    <LayoutDashboard className="w-3.5 h-3.5" />
+                    پنل کاربری
+                  </Link>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-center gap-1.5 w-full border border-primary text-primary text-xs font-bold py-2.5 rounded-xl no-underline"
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    ورود به حساب
+                  </Link>
+                )}
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
