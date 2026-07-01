@@ -106,8 +106,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resendCode = useCallback(async (username: string): Promise<void> => {
-    // Re-trigger the OTP by re-running sign-in for the same number.
-    await api.post('site/sign-in', { SigninForm: { username } }, { auth: false });
+    // Always send a login code — works even for users who have a password set
+    // (site/sign-in only auto-sends for password-less users).
+    await api.post('site/resend-code', { username }, { auth: false });
   }, []);
 
   const logout = useCallback(async (): Promise<void> => {
