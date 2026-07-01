@@ -17,6 +17,7 @@ import {
   Download
 } from 'lucide-react';
 import { ContactFormData } from '../types';
+import { useFieldErrors, FieldError } from '../pages/app/shared';
 
 interface DemoRequestModalProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
 
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'customers' | 'contracts' | 'sms'>('overview');
+  const { errors, clearError, showErrors } = useFieldErrors(['name', 'businessName', 'phone']);
 
   // Simulated live client database
   const [clients, setClients] = useState([
@@ -49,9 +51,17 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.phone) return;
+    const errs: Record<string, string> = {};
+    if (!formData.name.trim()) errs.name = 'نام و نام‌خانوادگی را وارد کنید';
+    if (!formData.businessName.trim()) errs.businessName = 'نام کسب‌وکار را وارد کنید';
+    if (!/^0?9\d{9}$/.test(formData.phone.replace(/\D/g, ''))) errs.phone = 'شماره تماس معتبر نیست';
+    if (Object.keys(errs).length) { showErrors(errs); return; }
     setSubmitted(true);
   };
+
+  const dangerCls = (has?: string) =>
+    has ? 'border-2 border-red-400 bg-red-50 focus:ring-red-400 focus:border-red-500'
+        : 'border border-slate-200 bg-slate-50/50 focus:ring-primary focus:border-primary';
 
   const handleCreateDemoClient = () => {
     // Add custom business info as client
@@ -154,38 +164,44 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                     <div>
                       <label className="text-xs font-bold text-slate-600 block mb-1">نام و نام‌خانوادگی شما *</label>
                       <input
+                        id="name"
                         type="text"
-                        required
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e) => { setFormData({ ...formData, name: e.target.value }); clearError('name'); }}
+                        aria-invalid={!!errors.name}
                         placeholder="مانند: علی حسینی"
-                        className="w-full text-sm px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-slate-700 bg-slate-50/50"
+                        className={`w-full text-sm px-4 py-2 rounded-xl focus:outline-none focus:ring-1 text-slate-700 transition-colors ${dangerCls(errors.name)}`}
                       />
+                      <FieldError id="name-error" msg={errors.name} />
                     </div>
 
                     <div>
                       <label className="text-xs font-bold text-slate-600 block mb-1">نام فروشگاه یا کسب‌و‌کار *</label>
                       <input
+                        id="businessName"
                         type="text"
-                        required
                         value={formData.businessName}
-                        onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                        onChange={(e) => { setFormData({ ...formData, businessName: e.target.value }); clearError('businessName'); }}
+                        aria-invalid={!!errors.businessName}
                         placeholder="مانند: نمایشگاه خودرو تخت جمشید"
-                        className="w-full text-sm px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-slate-700 bg-slate-50/50"
+                        className={`w-full text-sm px-4 py-2 rounded-xl focus:outline-none focus:ring-1 text-slate-700 transition-colors ${dangerCls(errors.businessName)}`}
                       />
+                      <FieldError id="businessName-error" msg={errors.businessName} />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="text-xs font-bold text-slate-600 block mb-1">شماره تماس (پیامک دمو) *</label>
                         <input
+                          id="phone"
                           type="tel"
-                          required
                           value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          onChange={(e) => { setFormData({ ...formData, phone: e.target.value }); clearError('phone'); }}
+                          aria-invalid={!!errors.phone}
                           placeholder="۰۹۱۲۳۴۵۶۷۸۹"
-                          className="w-full text-left font-mono text-sm px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-slate-700 bg-slate-50/50"
+                          className={`w-full text-left font-mono text-sm px-4 py-2 rounded-xl focus:outline-none focus:ring-1 text-slate-700 transition-colors ${dangerCls(errors.phone)}`}
                         />
+                        <FieldError id="phone-error" msg={errors.phone} />
                       </div>
 
                       <div>

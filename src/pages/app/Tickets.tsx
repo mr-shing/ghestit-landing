@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 import { useApi } from '../../lib/useApi';
 import { apiUpload, ApiError } from '../../lib/api';
 import { toFaDigits } from '../../lib/format';
-import { Card, EmptyState, ErrorState, Loading, PageHeader, StatusBadge } from './shared';
+import { Card, EmptyState, ErrorState, Loading, PageHeader, StatusBadge, useFieldErrors, inputClass, FieldError } from './shared';
 
 type TicketSummary = {
   id: string;
@@ -97,10 +97,18 @@ function CreateTicketModal({
   const [files, setFiles] = useState<FileList | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { errors, clearError, reset, showErrors, showApiErrors } = useFieldErrors(['title', 'description']);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const errs: Record<string, string> = {};
+    if (!title.trim()) errs.title = 'عنوان را وارد کنید';
+    if (!description.trim()) errs.description = 'توضیحات را وارد کنید';
+    if (Object.keys(errs).length) { showErrors(errs); return; }
+    reset();
+
     setBusy(true);
     try {
       const fd = new FormData();
@@ -111,7 +119,8 @@ function CreateTicketModal({
       await apiUpload('tickets/create', fd);
       onCreated();
     } catch (e) {
-      setError(e instanceof ApiError ? ((e.fields && Object.values(e.fields)[0]?.[0]) || e.message) : 'خطا در ثبت تیکت');
+      if (showApiErrors(e)) { /* field errors shown */ }
+      else setError(e instanceof ApiError ? e.message : 'خطا در ثبت تیکت');
     } finally {
       setBusy(false);
     }
@@ -130,11 +139,13 @@ function CreateTicketModal({
           </label>
           <label className="block">
             <span className="text-sm font-bold text-slate-600">عنوان</span>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-primary" />
+            <input id="title" value={title} onChange={(e) => { setTitle(e.target.value); clearError('title'); }} aria-invalid={!!errors.title} className={inputClass(!!errors.title, 'mt-1')} />
+            <FieldError id="title-error" msg={errors.title} />
           </label>
           <label className="block">
             <span className="text-sm font-bold text-slate-600">توضیحات</span>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} className="mt-1 w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-primary resize-none" />
+            <textarea id="description" value={description} onChange={(e) => { setDescription(e.target.value); clearError('description'); }} rows={4} aria-invalid={!!errors.description} className={inputClass(!!errors.description, 'mt-1 resize-none')} />
+            <FieldError id="description-error" msg={errors.description} />
           </label>
           <label className="block">
             <span className="text-sm font-bold text-slate-600">تصاویر (اختیاری)</span>

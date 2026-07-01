@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowRight, Send, XCircle } from 'lucide-react';
 import { useApi } from '../../lib/useApi';
 import { apiUpload, ApiError } from '../../lib/api';
-import { Card, ErrorState, Loading, StatusBadge } from './shared';
+import { Card, ErrorState, Loading, StatusBadge, useFieldErrors, inputClass, FieldError } from './shared';
 
 type Message = { sender: 'user' | 'support'; message: string; attachments?: string[]; created_at?: number };
 type Ticket = {
@@ -26,12 +26,14 @@ export default function TicketDetail() {
   const [files, setFiles] = useState<FileList | null>(null);
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const { errors, clearError, reset, showErrors, showApiErrors } = useFieldErrors(['message']);
 
   const ticket = data?.ticket;
 
   const sendReply = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!reply.trim()) return;
+    if (!reply.trim()) { showErrors({ message: 'متن پاسخ را وارد کنید' }); return; }
+    reset();
     setBusy(true);
     setActionError(null);
     try {
@@ -43,7 +45,8 @@ export default function TicketDetail() {
       setFiles(null);
       refetch();
     } catch (e) {
-      setActionError(e instanceof ApiError ? e.message : 'خطا در ارسال پاسخ');
+      if (showApiErrors(e)) { /* field errors shown */ }
+      else setActionError(e instanceof ApiError ? e.message : 'خطا در ارسال پاسخ');
     } finally {
       setBusy(false);
     }
@@ -105,12 +108,15 @@ export default function TicketDetail() {
             <Card className="p-4">
               <form onSubmit={sendReply} className="space-y-3">
                 <textarea
+                  id="message"
                   value={reply}
-                  onChange={(e) => setReply(e.target.value)}
+                  onChange={(e) => { setReply(e.target.value); clearError('message'); }}
                   rows={3}
                   placeholder="پاسخ خود را بنویسید…"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-primary resize-none"
+                  aria-invalid={!!errors.message}
+                  className={inputClass(!!errors.message, 'resize-none')}
                 />
+                <FieldError id="message-error" msg={errors.message} />
                 <input type="file" multiple accept="image/*" onChange={(e) => setFiles(e.target.files)} className="text-sm" />
                 <div className="flex gap-2">
                   <button type="submit" disabled={busy || !reply.trim()} className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl px-5 py-2.5 text-sm disabled:opacity-60">

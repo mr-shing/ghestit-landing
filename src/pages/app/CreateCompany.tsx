@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import { api, gatewayUrl, ApiError } from '../../lib/api';
 import { useApi } from '../../lib/useApi';
 import { money } from '../../lib/format';
-import { Card, ErrorState, Loading, PageHeader } from './shared';
+import { Card, ErrorState, Loading, PageHeader, useFieldErrors, inputClass, FieldError } from './shared';
 import LocationPicker from './LocationPicker';
 
 type PlanType = { id: number; label: string; price: number; isPro: boolean };
@@ -26,7 +26,9 @@ export default function CreateCompany() {
   const [loc, setLoc] = useState<{ lat: number; lng: number } | null>(null);
 
   const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const { errors: fieldErrors, clearError, reset: resetErrors, showApiErrors } = useFieldErrors(
+    ['business_category', 'name', 'host_name', 'phone', 'iban', 'province_id', 'city_id', 'address'],
+  );
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -52,7 +54,7 @@ export default function CreateCompany() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFieldErrors({});
+    resetErrors();
     setFormError(null);
     if (!loc) { setFormError('لطفاً موقعیت کسب‌وکار را روی نقشه انتخاب کنید.'); return; }
     setBusy(true);
@@ -71,14 +73,9 @@ export default function CreateCompany() {
       }
       navigate('/app/companies', { replace: true });
     } catch (err) {
-      if (err instanceof ApiError) {
-        const fe: Record<string, string> = {};
-        if (err.fields) for (const [k, v] of Object.entries(err.fields)) fe[k] = v[0];
-        setFieldErrors(fe);
-        setFormError(err.message);
-      } else {
-        setFormError('خطا در ساخت کسب‌وکار');
-      }
+      if (showApiErrors(err)) setFormError(null);
+      else if (err instanceof ApiError) setFormError(err.message);
+      else setFormError('خطا در ساخت کسب‌وکار');
     } finally {
       setBusy(false);
     }
@@ -113,35 +110,37 @@ export default function CreateCompany() {
             ))}
           </div>
 
-          <Select label="دسته‌بندی صنف" value={category} onChange={setCategory} error={fieldErrors.business_category} options={meta.categories.map((c) => ({ value: c, label: c }))} placeholder="انتخاب کنید" />
+          <Select name="business_category" label="دسته‌بندی صنف" value={category} onChange={(v) => { setCategory(v); clearError('business_category'); }} error={fieldErrors.business_category} options={meta.categories.map((c) => ({ value: c, label: c }))} placeholder="انتخاب کنید" />
 
-          <Input label="نام کسب‌وکار" value={name} onChange={setName} error={fieldErrors.name} placeholder="مثلاً: فروشگاه فرش شاهکار" />
+          <Input name="name" label="نام کسب‌وکار" value={name} onChange={(v) => { setName(v); clearError('name'); }} error={fieldErrors.name} placeholder="مثلاً: فروشگاه فرش شاهکار" />
 
           <div>
             <Label text="آدرس وب‌سایت (زیردامنه)" />
             <div className="flex items-stretch">
               <span className="inline-flex items-center bg-slate-100 border border-l-0 border-slate-200 rounded-r-xl px-3 text-slate-500 text-sm" dir="ltr">.ghestit.com</span>
-              <input value={host} onChange={(e) => setHost(e.target.value.replace(/[^a-zA-Z0-9-]/g, ''))} dir="ltr"
-                placeholder="shahkar" className="flex-1 bg-slate-50 border border-slate-200 rounded-l-xl px-4 py-3 outline-none focus:border-primary text-left" />
+              <input id="host_name" value={host} onChange={(e) => { setHost(e.target.value.replace(/[^a-zA-Z0-9-]/g, '')); clearError('host_name'); }} dir="ltr"
+                placeholder="shahkar" aria-invalid={!!fieldErrors.host_name}
+                className={`flex-1 rounded-l-xl px-4 py-3 outline-none text-left transition-colors ${fieldErrors.host_name ? 'bg-red-50 border-2 border-red-400 focus:border-red-500' : 'bg-slate-50 border border-slate-200 focus:border-primary'}`} />
             </div>
-            <FieldError msg={fieldErrors.host_name} />
+            <FieldError id="host_name-error" msg={fieldErrors.host_name} />
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Input label="تلفن" value={phone} onChange={(v) => setPhone(v.replace(/\D/g, ''))} error={fieldErrors.phone} dir="ltr" />
-            {isPro && <Input label="شماره شبا (IBAN)" value={iban} onChange={(v) => setIban(v.replace(/[^0-9]/g, ''))} error={fieldErrors.iban} dir="ltr" placeholder="بدون IR" />}
+            <Input name="phone" label="تلفن" value={phone} onChange={(v) => { setPhone(v.replace(/\D/g, '')); clearError('phone'); }} error={fieldErrors.phone} dir="ltr" />
+            {isPro && <Input name="iban" label="شماره شبا (IBAN)" value={iban} onChange={(v) => { setIban(v.replace(/[^0-9]/g, '')); clearError('iban'); }} error={fieldErrors.iban} dir="ltr" placeholder="بدون IR" />}
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Select label="استان" value={provinceId} onChange={setProvinceId} error={fieldErrors.province_id} placeholder="انتخاب استان" options={meta.provinces.map((p) => ({ value: String(p.id), label: p.name }))} />
-            <Select label="شهر" value={cityId} onChange={setCityId} error={fieldErrors.city_id} placeholder={provinceId ? 'انتخاب شهر' : 'ابتدا استان'} disabled={!provinceId} options={cities.map((c) => ({ value: String(c.id), label: c.name }))} />
+            <Select name="province_id" label="استان" value={provinceId} onChange={(v) => { setProvinceId(v); clearError('province_id'); }} error={fieldErrors.province_id} placeholder="انتخاب استان" options={meta.provinces.map((p) => ({ value: String(p.id), label: p.name }))} />
+            <Select name="city_id" label="شهر" value={cityId} onChange={(v) => { setCityId(v); clearError('city_id'); }} error={fieldErrors.city_id} placeholder={provinceId ? 'انتخاب شهر' : 'ابتدا استان'} disabled={!provinceId} options={cities.map((c) => ({ value: String(c.id), label: c.name }))} />
           </div>
 
           <div>
             <Label text="آدرس" />
-            <textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={2}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-primary resize-none" />
-            <FieldError msg={fieldErrors.address} />
+            <textarea id="address" value={address} onChange={(e) => { setAddress(e.target.value); clearError('address'); }} rows={2}
+              aria-invalid={!!fieldErrors.address}
+              className={inputClass(!!fieldErrors.address, 'resize-none')} />
+            <FieldError id="address-error" msg={fieldErrors.address} />
           </div>
 
           <div>
@@ -165,36 +164,33 @@ export default function CreateCompany() {
 function Label({ text }: { text: string }) {
   return <span className="text-sm font-bold text-slate-600 block mb-1.5">{text}</span>;
 }
-function FieldError({ msg }: { msg?: string }) {
-  return msg ? <p className="text-xs text-red-600 mt-1">{msg}</p> : null;
-}
 
-function Input({ label, value, onChange, error, dir, placeholder }: {
-  label: string; value: string; onChange: (v: string) => void; error?: string; dir?: 'ltr' | 'rtl'; placeholder?: string;
+function Input({ name, label, value, onChange, error, dir, placeholder }: {
+  name: string; label: string; value: string; onChange: (v: string) => void; error?: string; dir?: 'ltr' | 'rtl'; placeholder?: string;
 }) {
   return (
     <label className="block">
       <Label text={label} />
-      <input value={value} dir={dir} placeholder={placeholder} onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-primary" />
-      <FieldError msg={error} />
+      <input id={name} value={value} dir={dir} placeholder={placeholder} onChange={(e) => onChange(e.target.value)}
+        aria-invalid={!!error} className={inputClass(!!error)} />
+      <FieldError id={`${name}-error`} msg={error} />
     </label>
   );
 }
 
-function Select({ label, value, onChange, options, placeholder, error, disabled }: {
-  label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[];
+function Select({ name, label, value, onChange, options, placeholder, error, disabled }: {
+  name: string; label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[];
   placeholder?: string; error?: string; disabled?: boolean;
 }) {
   return (
     <label className="block">
       <Label text={label} />
-      <select value={value} disabled={disabled} onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-primary disabled:opacity-60">
+      <select id={name} value={value} disabled={disabled} onChange={(e) => onChange(e.target.value)}
+        aria-invalid={!!error} className={inputClass(!!error, 'disabled:opacity-60')}>
         <option value="">{placeholder ?? 'انتخاب کنید'}</option>
         {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
-      <FieldError msg={error} />
+      <FieldError id={`${name}-error`} msg={error} />
     </label>
   );
 }

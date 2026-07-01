@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { api, ApiError } from '../../lib/api';
-import { Card, PageHeader } from './shared';
+import { Card, PageHeader, useFieldErrors, inputClass, FieldError } from './shared';
 
 export default function ChangePassword() {
   const [password, setPassword] = useState('');
@@ -9,6 +9,8 @@ export default function ChangePassword() {
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { errors: fieldErrors, clearError, showErrors, showApiErrors, reset } =
+    useFieldErrors(['password', 'repeatPassword', 'code']);
   const [notice, setNotice] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [sending, setSending] = useState(false);
@@ -41,10 +43,19 @@ export default function ChangePassword() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (password !== repeatPassword) {
-      setError('رمز عبور و تکرار آن یکسان نیستند');
+
+    // Client-side validation.
+    const errs: Record<string, string> = {};
+    if (!password) errs.password = 'رمز عبور جدید را وارد کنید';
+    if (!repeatPassword) errs.repeatPassword = 'تکرار رمز عبور را وارد کنید';
+    else if (password !== repeatPassword) errs.repeatPassword = 'رمز عبور و تکرار آن یکسان نیستند';
+    if (!code) errs.code = 'کد پیامک را وارد کنید';
+    if (Object.keys(errs).length) {
+      showErrors(errs);
       return;
     }
+    reset();
+
     setBusy(true);
     try {
       await api.post('site/change-password', {
@@ -52,11 +63,9 @@ export default function ChangePassword() {
       });
       setDone(true);
     } catch (e) {
-      if (e instanceof ApiError) {
-        setError((e.fields && Object.values(e.fields)[0]?.[0]) || e.message);
-      } else {
-        setError('خطا در تغییر رمز عبور');
-      }
+      if (showApiErrors(e)) { /* field errors shown */ }
+      else if (e instanceof ApiError) setError(e.message);
+      else setError('خطا در تغییر رمز عبور');
     } finally {
       setBusy(false);
     }
@@ -71,9 +80,9 @@ export default function ChangePassword() {
         ) : (
           <form onSubmit={submit} className="space-y-4">
             {notice && <p className="text-sm text-sky-700 bg-sky-50 rounded-xl px-3 py-2">{notice}</p>}
-            <Input label="رمز عبور جدید" type="password" value={password} onChange={setPassword} />
-            <Input label="تکرار رمز عبور" type="password" value={repeatPassword} onChange={setRepeat} />
-            <Input label="کد پیامک" value={code} onChange={(v) => setCode(v.replace(/\D/g, '').slice(0, 6))} dir="ltr" />
+            <Input name="password" label="رمز عبور جدید" type="password" value={password} onChange={(v) => { setPassword(v); clearError('password'); }} error={fieldErrors.password} />
+            <Input name="repeatPassword" label="تکرار رمز عبور" type="password" value={repeatPassword} onChange={(v) => { setRepeat(v); clearError('repeatPassword'); }} error={fieldErrors.repeatPassword} />
+            <Input name="code" label="کد پیامک" value={code} onChange={(v) => { setCode(v.replace(/\D/g, '').slice(0, 6)); clearError('code'); }} dir="ltr" error={fieldErrors.code} />
             <button
               type="button"
               onClick={sendOtp}
@@ -102,8 +111,8 @@ export default function ChangePassword() {
 }
 
 function Input({
-  label, value, onChange, type = 'text', dir,
-}: { label: string; value: string; onChange: (v: string) => void; type?: string; dir?: 'ltr' | 'rtl' }) {
+  name, label, value, onChange, type = 'text', dir, error,
+}: { name: string; label: string; value: string; onChange: (v: string) => void; type?: string; dir?: 'ltr' | 'rtl'; error?: string }) {
   const isPassword = type === 'password';
   const [show, setShow] = useState(false);
   const inputType = isPassword && show ? 'text' : type;
@@ -112,23 +121,28 @@ function Input({
       <span className="text-sm font-bold text-slate-600">{label}</span>
       <div className="relative mt-1">
         <input
+          id={name}
+          name={name}
           type={inputType}
           dir={dir}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={`w-full bg-slate-50 border border-slate-200 rounded-xl py-3 outline-none focus:border-primary transition-colors ${isPassword ? 'ps-11 pe-4' : 'px-4'}`}
+          aria-invalid={!!error}
+          aria-describedby={error ? `${name}-error` : undefined}
+          className={inputClass(!!error, isPassword ? '!ps-11 !pe-4' : '')}
         />
         {isPassword && (
           <button
             type="button"
             onClick={() => setShow((s) => !s)}
             aria-label={show ? 'مخفی کردن رمز عبور' : 'نمایش رمز عبور'}
-            className="absolute inset-y-0 start-0 flex items-center px-3 text-slate-400 hover:text-slate-600 transition-colors"
+            className={`absolute inset-y-0 start-0 flex items-center px-3 transition-colors ${error ? 'text-red-400 hover:text-red-500' : 'text-slate-400 hover:text-slate-600'}`}
           >
             {show ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         )}
       </div>
+      <FieldError id={`${name}-error`} msg={error} />
     </label>
   );
 }

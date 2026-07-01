@@ -3,10 +3,14 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { ArrowRight, KeyRound, MessageSquare, Phone, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import { ApiError } from '../../lib/api';
+import { useFieldErrors, FieldError } from '../app/shared';
 
 type Step = 'phone' | 'password' | 'otp' | 'signup' | 'forgot' | 'reset';
 
 const RESEND_SECONDS = 90;
+// Prefill the login field with the last-used phone number. Only the phone is
+// stored — never the password.
+const LAST_PHONE_KEY = 'gst_last_phone';
 
 export default function Login() {
   const auth = useAuth();
@@ -15,7 +19,7 @@ export default function Login() {
   const redirectTo = location.state?.from || '/app/installments';
 
   const [step, setStep] = useState<Step>('phone');
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState(() => localStorage.getItem(LAST_PHONE_KEY) ?? '');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [code, setCode] = useState('');
@@ -23,6 +27,8 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [resendIn, setResendIn] = useState(0);
+  const { errors, clearError, reset: resetErrors, showErrors, showApiErrors } =
+    useFieldErrors(['username', 'full_name', 'code', 'password', 'repeatPassword']);
 
   const timer = useRef<number | null>(null);
   const startResendTimer = () => {
@@ -38,19 +44,21 @@ export default function Login() {
   useEffect(() => () => { if (timer.current) window.clearInterval(timer.current); }, []);
 
   const fail = (e: unknown, fallback = 'خطایی رخ داد') => {
-    if (e instanceof ApiError) setError((e.fields && Object.values(e.fields)[0]?.[0]) || e.message || fallback);
+    if (showApiErrors(e)) return;
+    if (e instanceof ApiError) setError(e.message || fallback);
     else setError(fallback);
   };
-  const goto = (s: Step) => { setError(null); setCode(''); setPassword(''); setStep(s); };
+  const goto = (s: Step) => { setError(null); resetErrors(); setCode(''); setPassword(''); setStep(s); };
   const done = () => navigate(redirectTo, { replace: true });
 
   const submitPhone = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    if (!/^09\d{9}$/.test(username)) { setError('شماره موبایل معتبر نیست'); return; }
+    setError(null); resetErrors();
+    if (!/^09\d{9}$/.test(username)) { showErrors({ username: 'شماره موبایل معتبر نیست' }); return; }
     setBusy(true);
     try {
       const r = await auth.signIn(username);
+      localStorage.setItem(LAST_PHONE_KEY, username); // remember phone for next time
       if (r.mode === 'signup') { setStep('signup'); startResendTimer(); }
       else if (r.hasPassword) setStep('password');
       else { setStep('otp'); startResendTimer(); }
@@ -89,8 +97,8 @@ export default function Login() {
 
   const submitReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    if (password !== repeatPassword) { setError('رمز عبور و تکرار آن یکسان نیستند'); return; }
+    setError(null); resetErrors();
+    if (password !== repeatPassword) { showErrors({ repeatPassword: 'رمز عبور و تکرار آن یکسان نیستند' }); return; }
     setBusy(true);
     try { await auth.resetPassword(username, password, repeatPassword, code); goto('password'); }
     catch (e) { fail(e); } finally { setBusy(false); }
@@ -112,8 +120,8 @@ export default function Login() {
         {step === 'phone' && (
           <form onSubmit={submitPhone} className="space-y-5">
             <Header title="ورود به قسطیت" subtitle="شماره موبایل خود را وارد کنید" />
-            <Field icon={<Phone size={18} />}>
-              <input value={username} onChange={(e) => setUsername(e.target.value.replace(/\D/g, '').slice(0, 11))}
+            <Field icon={<Phone size={18} />} error={errors.username}>
+              <input id="username" value={username} onChange={(e) => { setUsername(e.target.value.replace(/\D/g, '').slice(0, 11)); clearError('username'); }}
                 placeholder="09xxxxxxxxx" dir="ltr" inputMode="numeric" autoFocus
                 className="w-full bg-transparent text-center tracking-widest text-lg outline-none" />
             </Field>
@@ -125,8 +133,8 @@ export default function Login() {
         {step === 'password' && (
           <form onSubmit={submitPassword} className="space-y-5">
             <Header icon={<KeyRound size={22} />} title="ورود با رمز عبور" subtitle={`رمز عبور حساب ${username}`} onEdit={() => goto('phone')} />
-            <Field icon={<KeyRound size={18} />}>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+            <Field icon={<KeyRound size={18} />} error={errors.password}>
+              <input id="password" type="password" value={password} onChange={(e) => { setPassword(e.target.value); clearError('password'); }}
                 placeholder="رمز عبور" autoFocus className="w-full bg-transparent outline-none" />
             </Field>
             <Err msg={error} />
@@ -147,12 +155,12 @@ export default function Login() {
               onEdit={() => goto('phone')}
             />
             {step === 'signup' && (
-              <Field>
-                <input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="نام و نام خانوادگی"
+              <Field error={errors.full_name}>
+                <input id="full_name" value={fullName} onChange={(e) => { setFullName(e.target.value); clearError('full_name'); }} placeholder="نام و نام خانوادگی"
                   className="w-full bg-transparent text-center outline-none" />
               </Field>
             )}
-            <CodeField value={code} onChange={setCode} />
+            <CodeField value={code} onChange={(v) => { setCode(v); clearError('code'); }} error={errors.code} />
             <Err msg={error} />
             <Submit busy={busy} label={step === 'signup' ? 'ثبت‌نام و ورود' : 'ورود'} />
             <ResendButton resendIn={resendIn} onClick={handleResend} />
@@ -162,8 +170,8 @@ export default function Login() {
         {step === 'forgot' && (
           <form onSubmit={submitForgot} className="space-y-5">
             <Header title="بازیابی رمز عبور" subtitle="کد بازیابی به موبایل شما ارسال می‌شود" onEdit={() => goto('password')} />
-            <Field icon={<Phone size={18} />}>
-              <input value={username} onChange={(e) => setUsername(e.target.value.replace(/\D/g, '').slice(0, 11))}
+            <Field icon={<Phone size={18} />} error={errors.username}>
+              <input id="username" value={username} onChange={(e) => { setUsername(e.target.value.replace(/\D/g, '').slice(0, 11)); clearError('username'); }}
                 placeholder="09xxxxxxxxx" dir="ltr" inputMode="numeric"
                 className="w-full bg-transparent text-center tracking-widest text-lg outline-none" />
             </Field>
@@ -175,13 +183,13 @@ export default function Login() {
         {step === 'reset' && (
           <form onSubmit={submitReset} className="space-y-5">
             <Header icon={<KeyRound size={22} />} title="رمز عبور جدید" subtitle={`کد ارسال‌شده به ${username} و رمز جدید را وارد کنید`} />
-            <CodeField value={code} onChange={setCode} />
-            <Field icon={<KeyRound size={18} />}>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="رمز عبور جدید"
+            <CodeField value={code} onChange={(v) => { setCode(v); clearError('code'); }} error={errors.code} />
+            <Field icon={<KeyRound size={18} />} error={errors.password}>
+              <input id="password" type="password" value={password} onChange={(e) => { setPassword(e.target.value); clearError('password'); }} placeholder="رمز عبور جدید"
                 className="w-full bg-transparent outline-none" />
             </Field>
-            <Field icon={<KeyRound size={18} />}>
-              <input type="password" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} placeholder="تکرار رمز عبور"
+            <Field icon={<KeyRound size={18} />} error={errors.repeatPassword}>
+              <input id="repeatPassword" type="password" value={repeatPassword} onChange={(e) => { setRepeatPassword(e.target.value); clearError('repeatPassword'); }} placeholder="تکرار رمز عبور"
                 className="w-full bg-transparent outline-none" />
             </Field>
             <Err msg={error} />
@@ -215,19 +223,24 @@ function Header({ title, subtitle, icon, onEdit }: { title: string; subtitle?: s
   );
 }
 
-function Field({ children, icon }: { children: React.ReactNode; icon?: React.ReactNode }) {
+function Field({ children, icon, error }: { children: React.ReactNode; icon?: React.ReactNode; error?: string }) {
   return (
-    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 focus-within:border-primary transition-colors">
-      {icon && <span className="text-slate-400">{icon}</span>}
-      {children}
+    <div>
+      <div className={`flex items-center gap-2 rounded-2xl px-4 py-3 transition-colors ${
+        error ? 'bg-red-50 border-2 border-red-400 focus-within:border-red-500'
+              : 'bg-slate-50 border border-slate-200 focus-within:border-primary'}`}>
+        {icon && <span className={error ? 'text-red-400' : 'text-slate-400'}>{icon}</span>}
+        {children}
+      </div>
+      <FieldError msg={error} />
     </div>
   );
 }
 
-function CodeField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function CodeField({ value, onChange, error }: { value: string; onChange: (v: string) => void; error?: string }) {
   return (
-    <Field>
-      <input value={value} onChange={(e) => onChange(e.target.value.replace(/\D/g, '').slice(0, 6))}
+    <Field error={error}>
+      <input id="code" value={value} onChange={(e) => onChange(e.target.value.replace(/\D/g, '').slice(0, 6))}
         placeholder="_ _ _ _ _ _" dir="ltr" inputMode="numeric" autoFocus
         className="w-full bg-transparent text-center tracking-[0.5em] text-xl outline-none" />
     </Field>

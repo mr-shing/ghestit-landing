@@ -45,33 +45,47 @@ import GhestitVisual from './components/GhestitVisual';
 import { Link } from 'react-router-dom';
 import { panelUrl } from './lib/config';
 import { api, ApiError } from './lib/api';
+import { useFieldErrors, FieldError } from './pages/app/shared';
 
 export default function App() {
   const [isDemoOpen, setIsDemoOpen] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [selectedPlanDetail, setSelectedPlanDetail] = useState<string | null>(null);
   const [consultBusy, setConsultBusy] = useState<boolean>(false);
+  const { errors: consultErrors, clearError: clearConsultError, reset: resetConsultErrors, showErrors: showConsultErrors, showApiErrors: showConsultApiErrors } =
+    useFieldErrors(['name', 'business', 'phone']);
 
   // Consultation/lead form -> stored in MongoDB, reviewed in the admin panel.
   const submitConsultation = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const fd = new FormData(form);
+    const name = String(fd.get('name') ?? '').trim();
+    const phone = String(fd.get('phone') ?? '').trim();
     const business = String(fd.get('business') ?? '');
     const website = String(fd.get('website') ?? '');
     const needs = String(fd.get('needs') ?? '');
+
+    // Client-side validation.
+    const errs: Record<string, string> = {};
+    if (!name) errs.name = 'نام را وارد کنید';
+    if (!business.trim()) errs.business = 'نام صنف یا فروشگاه را وارد کنید';
+    if (!/^09\d{9}$/.test(phone)) errs.phone = 'شماره موبایل معتبر نیست';
+    if (Object.keys(errs).length) { showConsultErrors(errs); return; }
+    resetConsultErrors();
+
     setConsultBusy(true);
     try {
       await api.post('site/contact', {
-        name: String(fd.get('name') ?? ''),
-        phone: String(fd.get('phone') ?? ''),
+        name, phone,
         subject: business ? `مشاوره: ${business}` : 'درخواست مشاوره',
         body: [needs, website && `وب‌سایت: ${website}`].filter(Boolean).join('\n'),
       }, { auth: false });
       form.reset();
       alert('درخواست همکاری و مشاوره صنف شما با موفقیت ثبت گردید. به زودی با شماره همراه وارد شده تماس خواهیم گرفت.');
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : 'خطا در ثبت درخواست. لطفاً دوباره تلاش کنید.');
+      if (showConsultApiErrors(err)) { /* field errors shown */ }
+      else alert(err instanceof ApiError ? err.message : 'خطا در ثبت درخواست. لطفاً دوباره تلاش کنید.');
     } finally {
       setConsultBusy(false);
     }
@@ -1004,22 +1018,28 @@ export default function App() {
                     <div>
                       <label className="text-[10px] text-slate-500 block mb-1.5 font-extrabold text-right">نام رابط / دارنده کسب‌وکار *</label>
                       <input
+                        id="name"
                         type="text"
                         name="name"
-                        required
+                        onChange={() => clearConsultError('name')}
+                        aria-invalid={!!consultErrors.name}
                         placeholder="مثلاً: مهران کریمی"
-                        className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-slate-800 font-sans font-medium text-right"
+                        className={`w-full text-xs rounded-xl px-4 py-3 focus:outline-none text-slate-800 font-sans font-medium text-right transition-colors ${consultErrors.name ? 'bg-red-50 border-2 border-red-400 focus:border-red-500' : 'bg-slate-50 border border-slate-200 focus:border-primary'}`}
                       />
+                      <FieldError id="name-error" msg={consultErrors.name} />
                     </div>
                     <div>
                       <label className="text-[10px] text-slate-500 block mb-1.5 font-extrabold text-right">نام صنف یا فروشگاه *</label>
                       <input
+                        id="business"
                         type="text"
                         name="business"
-                        required
+                        onChange={() => clearConsultError('business')}
+                        aria-invalid={!!consultErrors.business}
                         placeholder="مثلاً: فروشگاه فرش شاهکار"
-                        className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-slate-800 font-sans font-medium text-right"
+                        className={`w-full text-xs rounded-xl px-4 py-3 focus:outline-none text-slate-800 font-sans font-medium text-right transition-colors ${consultErrors.business ? 'bg-red-50 border-2 border-red-400 focus:border-red-500' : 'bg-slate-50 border border-slate-200 focus:border-primary'}`}
                       />
+                      <FieldError id="business-error" msg={consultErrors.business} />
                     </div>
                   </div>
 
@@ -1027,13 +1047,15 @@ export default function App() {
                     <div>
                       <label className="text-[10px] text-slate-500 block mb-1.5 font-extrabold text-right">تلفن همراه فعال *</label>
                       <input
+                        id="phone"
                         type="tel"
                         name="phone"
-                        required
-                        pattern="09[0-9]{9}"
+                        onChange={() => clearConsultError('phone')}
+                        aria-invalid={!!consultErrors.phone}
                         placeholder="مثلاً: ۰۹۱۲۳۴۵۶۷۸۹"
-                        className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-left font-mono focus:outline-none focus:border-primary text-slate-800"
+                        className={`w-full text-xs rounded-xl px-4 py-3 text-left font-mono focus:outline-none text-slate-800 transition-colors ${consultErrors.phone ? 'bg-red-50 border-2 border-red-400 focus:border-red-500' : 'bg-slate-50 border border-slate-200 focus:border-primary'}`}
                       />
+                      <FieldError id="phone-error" msg={consultErrors.phone} />
                     </div>
                     <div>
                       <label className="text-[10px] text-slate-500 block mb-1.5 font-extrabold text-right">آدرس وب‌سایت (اختیاری)</label>
