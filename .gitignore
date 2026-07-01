@@ -6,3 +6,10 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Android TWA build artifacts
+android.keystore
+*.apk
+*.aab
+*.keystore
+dev-dist
