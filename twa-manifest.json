@@ -32,5 +32,6 @@
   "isMetaQuest": false,
   "fullScopeUrl": "https://ghestit.com/",
   "minSdkVersion": 21,
-  "lang": "fa-IR"
+  "lang": "fa-IR",
+  "splashScreenFadeOutDuration": 300
 }
