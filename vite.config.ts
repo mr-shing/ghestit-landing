@@ -38,7 +38,8 @@ export default defineConfig(({mode}) => {
           globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
           navigateFallback: '/index.html',
           // Never cache API responses in the SW; the app owns its own fetching.
-          navigateFallbackDenylist: [/^\/api/],
+          // /downloads holds real binaries (APK) — SPA fallback must not swallow them.
+          navigateFallbackDenylist: [/^\/api/, /^\/downloads\//, /^\/\.well-known\//],
           maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         },
       }),
