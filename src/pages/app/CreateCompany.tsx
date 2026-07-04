@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { api, gatewayUrl, ApiError } from '../../lib/api';
 import { useApi } from '../../lib/useApi';
@@ -12,6 +12,7 @@ type FormMeta = { types: PlanType[]; categories: string[]; provinces: { id: numb
 
 export default function CreateCompany() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { data: meta, loading, error, refetch } = useApi<FormMeta>('company/form-meta');
 
   const [type, setType] = useState<number | null>(null);
@@ -32,10 +33,13 @@ export default function CreateCompany() {
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  // Default to the first paid plan once meta loads.
+  // Default to the plan from ?type= when valid, else the first paid plan, once meta loads.
   useEffect(() => {
-    if (meta && type === null) setType(meta.types.find((t) => t.id > 1)?.id ?? meta.types[0]?.id ?? 1);
-  }, [meta, type]);
+    if (meta && type === null) {
+      const fromQuery = meta.types.find((t) => t.id === Number(searchParams.get('type')));
+      setType(fromQuery?.id ?? meta.types.find((t) => t.id > 1)?.id ?? meta.types[0]?.id ?? 1);
+    }
+  }, [meta, type, searchParams]);
 
   // Load cities when province changes.
   useEffect(() => {

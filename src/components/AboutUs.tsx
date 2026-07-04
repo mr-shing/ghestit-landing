@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ShieldCheck, Headphones, Smartphone, Infinity, ArrowLeft, Sparkles } from 'lucide-react';
-import { panelUrl } from '../lib/config';
+import { Link } from 'react-router-dom';
 
 export default function AboutUs() {
   return (
@@ -91,15 +91,13 @@ export default function AboutUs() {
         <div className="mt-20 text-center bg-gradient-to-b from-white/40 to-transparent p-8 rounded-3xl border border-slate-100/50 backdrop-blur-sm">
           <h3 className="text-lg md:text-xl font-black text-slate-800 mb-2">به ما بپیوندید و تجربه‌ای متفاوت از خرید و فروش اقساطی را داشته باشید</h3>
           <p className="text-slate-500 text-xs font-bold mb-6 font-sans">آماده هوشمندسازی کانال‌های فروش و اعتبارسنجی خود هستید؟</p>
-          <a 
-            href={panelUrl('/company/create?type=1')} 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <Link
+            to="/app/companies/create?type=1"
             className="inline-flex items-center gap-2 px-8 py-4 bg-[#02A958] hover:bg-[#02904F] text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-emerald-500/10 active:scale-95 no-underline"
           >
             <span>پیوستن به قسطیت</span>
             <ArrowLeft className="w-4 h-4" />
-          </a>
+          </Link>
         </div>
 
       </div>

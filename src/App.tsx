@@ -45,7 +45,6 @@ import AboutUs from './components/AboutUs';
 import { Plan, FeatureItem } from './types';
 import GhestitVisual from './components/GhestitVisual';
 import { Link } from 'react-router-dom';
-import { panelUrl } from './lib/config';
 import { api, ApiError, tokenStore } from './lib/api';
 import { useFieldErrors, FieldError } from './pages/app/shared';
 
@@ -122,7 +121,7 @@ export default function App() {
       price: '۱۲ میلیون تومان',
       originalPriceNum: 12000000,
       period: 'در سال',
-      link: panelUrl('/company/create?type=2'),
+      link: '/app/companies/create?type=2',
       features: [
         { text: 'محاسبه خودکار اقساط', included: true },
         { text: 'محاسبه خودکار جریمه دیرکرد', included: true },
@@ -142,7 +141,7 @@ export default function App() {
       price: '۱۸ میلیون تومان',
       originalPriceNum: 18000000,
       period: 'در سال',
-      link: panelUrl('/company/create?type=3'),
+      link: '/app/companies/create?type=3',
       features: [
         { text: 'محاسبه خودکار اقساط', included: true },
         { text: 'محاسبه خودکار جریمه دیرکرد', included: true },
@@ -163,7 +162,7 @@ export default function App() {
       originalPriceNum: 28000000,
       period: 'در سال',
       isPopular: true,
-      link: panelUrl('/company/create?type=3'),
+      link: '/app/companies/create?type=3',
       features: [
         { text: 'محاسبه خودکار اقساط', included: true },
         { text: 'محاسبه خودکار جریمه دیرکرد', included: true },
@@ -371,28 +370,24 @@ export default function App() {
                 ورود
               </Link>
             )}
-            <a
-              href={panelUrl('/company/create?type=1')}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/app/companies/create?type=1"
               className="px-6 py-3.5 bg-[#02A958] hover:bg-primary-hover text-white text-xs font-black rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center gap-2 cursor-pointer no-underline inline-flex"
             >
                درخواست نسخه دمو
-            </a>
+            </Link>
           </div>
 
           {/* Mobile Actions Area (Payment Button + Hamburger) */}
           <div className="md:hidden flex items-center gap-2">
             {/* دکمه پرداخت قسط که در حالت موبایل بالای صفحه کنار منو قرار می‌گیرد */}
-            <a 
-              href={panelUrl('/')} 
-              target="_blank" 
-              rel="noopener noreferrer"
+            <Link
+              to="/app"
               className="px-3 py-1.5 bg-[#02A958] hover:bg-[#02944e] text-white text-[11px] font-black rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1 no-underline"
             >
               <Coins className="w-3.5 h-3.5" />
               <span>پرداخت قسط</span>
-            </a>
+            </Link>
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -493,15 +488,13 @@ export default function App() {
                   </p>
 
                   <div className="flex flex-wrap gap-4 pt-2 w-full sm:w-auto">
-                    <a
-                      href={panelUrl('/company/create?type=1')}
-                      target="_blank"                 
-                      rel="noopener noreferrer"       
+                    <Link
+                      to="/app/companies/create?type=1"
                       className="group px-8 py-4 bg-[#02A958] hover:bg-[#02944e] text-white text-sm font-bold rounded-2xl shadow-xl shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-0.5 active:scale-95 flex items-center gap-3 cursor-pointer no-underline w-full sm:w-auto justify-center"
                     >
                       <span>درخواست نسخه دمو</span>
                       <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                    </a>
+                    </Link>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-10 border-t border-slate-100 w-full max-w-2xl" dir="rtl">
@@ -706,10 +699,8 @@ export default function App() {
                           تماس بگیرید
                         </button>
                       ) : (
-                        <a
-                          href={plan.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <Link
+                          to={plan.link}
                           className={`w-full py-2.5 rounded-xl text-xs font-black cursor-pointer flex items-center justify-center no-underline transition-colors duration-200 ${
                             plan.isPopular
                               ? 'bg-[#02A958] hover:bg-[#02904F] text-white shadow-md'
@@ -717,7 +708,7 @@ export default function App() {
                           }`}
                         >
                           خرید طرح
-                        </a>
+                        </Link>
                       )}
                     </motion.div>
                   );
@@ -807,14 +798,12 @@ export default function App() {
 
                   <div className="pt-6 border-t border-slate-100 mt-6 flex justify-between items-center">
                     <span className="text-[10px] text-slate-400 font-mono"></span>
-                    <a 
-                      href={panelUrl('/company/create?type=1')} 
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <Link
+                      to="/app/companies/create?type=1"
                       className="text-xs font-bold text-primary hover:text-primary-hover flex items-center gap-1 cursor-pointer"
                     >
                        تست دمو   ←
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -1224,15 +1213,13 @@ export default function App() {
       />
 
       {/* دکمه شناور پایین صفحه (فقط در حالت دسکتاپ نمایش داده می‌شود) */}
-      <a 
-        href={panelUrl('/')} 
-        target="_blank" 
-        rel="noopener noreferrer"
+      <Link
+        to="/app"
         className="hidden md:flex fixed bottom-6 left-6 z-50 px-6 py-3 bg-[#02A958] hover:bg-[#02944e] text-white rounded-full shadow-2xl shadow-emerald-500/30 transition-all duration-300 hover:-translate-y-1 active:scale-95 items-center gap-2 cursor-pointer no-underline"
       >
         <Coins className="w-4 h-4" />
         <span>پرداخت قسط</span>
-      </a>
+      </Link>
     </div>
   );
 }
