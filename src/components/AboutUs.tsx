@@ -75,7 +75,7 @@ export default function AboutUs() {
                   desc: "در قسطیت هیچ‌گونه محدودیتی برای کسب و کارها وجود ندارد، بنابراین همه کسب‌وکارها با انواع کالاها و خدمات به پلتفرم دسترسی دارند." 
                 },
               ].map((val, i) => (
-                <div key={i} className="flex flex-col items-start text-right space-y-4 p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:border-[#02A958]/30 transition-colors group">
+                <div key={i} className="flex flex-col items-start text-right space-y-4 p-6 rounded-2xl bg-white/10 border border-white/10 hover:border-[#02A958]/30 transition-colors group">
                   <div className="w-10 h-10 rounded-xl bg-white/5 text-[#02A958] flex items-center justify-center group-hover:bg-[#02A958] group-hover:text-white transition-colors duration-300">
                     <val.icon className="w-5 h-5" />
                   </div>
@@ -88,7 +88,7 @@ export default function AboutUs() {
         </div>
 
         {/* CTA Section */}
-        <div className="mt-20 text-center bg-gradient-to-b from-white/40 to-transparent p-8 rounded-3xl border border-slate-100/50 backdrop-blur-sm">
+        <div className="mt-20 text-center bg-gradient-to-b from-white/40 to-transparent p-8 rounded-3xl border border-slate-100/50">
           <h3 className="text-lg md:text-xl font-black text-slate-800 mb-2">به ما بپیوندید و تجربه‌ای متفاوت از خرید و فروش اقساطی را داشته باشید</h3>
           <p className="text-slate-500 text-xs font-bold mb-6 font-sans">آماده هوشمندسازی کانال‌های فروش و اعتبارسنجی خود هستید؟</p>
           <Link

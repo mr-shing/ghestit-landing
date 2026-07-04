@@ -10,6 +10,13 @@ export default function ThreeCanvas({ isBackground = false }: ThreeCanvasProps) 
 
   useEffect(() => {
     if (!containerRef.current) return;
+    // The particle backdrop is decoration; on phones and for reduced-motion
+    // users its constant GPU work (especially under Safari's backdrop-filter)
+    // costs far more than it adds. Skip it entirely there.
+    if (
+      window.matchMedia('(max-width: 767px)').matches ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) return;
 
     const container = containerRef.current;
     const width = container.clientWidth || window.innerWidth;
@@ -25,7 +32,7 @@ export default function ThreeCanvas({ isBackground = false }: ThreeCanvasProps) 
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     container.appendChild(renderer.domElement);
 
     // Group to hold all interactive meshes
@@ -98,12 +105,16 @@ export default function ThreeCanvas({ isBackground = false }: ThreeCanvasProps) 
     };
     if (isBackground) window.addEventListener('scroll', handleScroll, { passive: true });
 
-    // Animation Loop
+    // Animation Loop (30fps is plenty for ambient particles; halves GPU load)
     let animationFrameId: number;
     let clock = new THREE.Clock();
+    let lastFrame = 0;
+    const FRAME_INTERVAL = 1000 / 30;
 
-    const animate = () => {
+    const animate = (now = 0) => {
       animationFrameId = requestAnimationFrame(animate);
+      if (now - lastFrame < FRAME_INTERVAL) return;
+      lastFrame = now;
       const elapsedTime = clock.getElapsedTime();
 
       // Particle animation
@@ -130,6 +141,16 @@ export default function ThreeCanvas({ isBackground = false }: ThreeCanvasProps) 
 
     animate();
 
+    // Stop rendering entirely while the tab is hidden.
+    const handleVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(animationFrameId);
+      } else {
+        animate();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {
         const { width: newWidth, height: newHeight } = entry.contentRect;
@@ -144,6 +165,7 @@ export default function ThreeCanvas({ isBackground = false }: ThreeCanvasProps) 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       if (isBackground) window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('visibilitychange', handleVisibility);
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
       if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement);

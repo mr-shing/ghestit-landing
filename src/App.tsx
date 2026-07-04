@@ -470,7 +470,7 @@ export default function App() {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
                 
                 <div className="lg:col-span-7 space-y-8 text-right flex flex-col items-start order-2 lg:order-1">
-                  <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-50/80 text-[#02A958] border border-emerald-100 rounded-full text-xs font-black backdrop-blur-sm shadow-sm animate-pulse">
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-50/80 text-[#02A958] border border-emerald-100 rounded-full text-xs font-black shadow-sm animate-pulse">
                     <Zap className="w-3.5 h-3.5 fill-[#02A958]" />
                     <span>اولین سامانه یکپارچه پرداخت اقساط کشور</span>
                   </div>
@@ -539,7 +539,7 @@ export default function App() {
           {/* 3. WHY GHESTIT */}
           <div className="relative z-10 w-full py-10 flex flex-col justify-center items-center text-center">
             <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-[#02A958]/25 to-transparent top-1/2 -z-10" />
-            <div className="bg-white/95 border border-[#02A958]/20 backdrop-blur-md px-6 py-3 rounded-2xl shadow-lg flex items-center gap-3 active:scale-95 transition-all">
+            <div className="bg-white/95 border border-[#02A958]/20 px-6 py-3 rounded-2xl shadow-lg flex items-center gap-3 active:scale-95 transition-all">
               <Sparkles className="w-5 h-5 text-primary animate-pulse" />
               <h2 className="text-sm md:text-xl lg:text-2xl font-black text-slate-900 tracking-tight" id="features-main-heading">
                چرا قسطیت ؟
@@ -547,7 +547,7 @@ export default function App() {
             </div>
           </div>
 
-          <section className="py-16 bg-[#fafafa]/60 backdrop-blur-md relative overflow-hidden" id="why-ghestit">
+          <section className="py-16 bg-[#fafafa]/90 relative overflow-hidden" id="why-ghestit">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center max-w-2xl mx-auto mb-12">
                 <h2 className="text-2xl md:text-3xl font-black text-slate-900 font-sans">
@@ -590,7 +590,7 @@ export default function App() {
           {/* 4. PRICING PLANS */}
           <div className="relative z-10 w-full py-10 flex flex-col justify-center items-center text-center">
             <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-[#02A958]/25 to-transparent top-1/2 -z-10" />
-            <div className="bg-white/95 border border-[#02A958]/15 backdrop-blur-md px-6 py-3 rounded-2xl shadow-lg flex items-center gap-3 active:scale-95 transition-all">
+            <div className="bg-white/95 border border-[#02A958]/15 px-6 py-3 rounded-2xl shadow-lg flex items-center gap-3 active:scale-95 transition-all">
               <Coins className="w-5 h-5 text-primary" />
               <h2 className="text-sm md:text-xl lg:text-2xl font-black text-slate-900 tracking-tight" id="pricing-plans-heading">
                 پلن‌های عضویت نرم افزار قسطیت
@@ -598,7 +598,7 @@ export default function App() {
             </div>
           </div>
 
-          <section className="py-16 bg-white/40 backdrop-blur-md relative overflow-hidden" id="pricing-section">
+          <section className="py-16 bg-white/90 relative overflow-hidden" id="pricing-section">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center max-w-2xl mx-auto mb-12">
                 <h2 className="text-2xl md:text-3xl font-black text-slate-900">
@@ -635,7 +635,7 @@ export default function App() {
                       className={`rounded-3xl p-5 border flex flex-col justify-between relative ${
                         plan.isPopular 
                           ? 'border-primary bg-primary/5 shadow-md' 
-                          : 'border-slate-150 bg-white/80 backdrop-blur-md shadow-sm'
+                          : 'border-slate-150 bg-white/95 shadow-sm'
                       }`}
                     >
                       {plan.isPopular && (
@@ -720,7 +720,7 @@ export default function App() {
           {/* 5. TARGET AUDIENCE */}
           <div className="relative z-10 w-full py-10 flex flex-col justify-center items-center text-center">
             <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-[#02A958]/25 to-transparent top-1/2 -z-10" />
-            <div className="bg-white/95 border border-[#02A958]/15 backdrop-blur-md px-6 py-3 rounded-2xl shadow-lg flex items-center gap-3 active:scale-95 transition-all">
+            <div className="bg-white/95 border border-[#02A958]/15 px-6 py-3 rounded-2xl shadow-lg flex items-center gap-3 active:scale-95 transition-all">
               <Building2 className="w-5 h-5 text-primary" />
               <h2 className="text-sm md:text-xl lg:text-2xl font-black text-slate-900 tracking-tight" id="business-integration-heading">
                 تطابق کامل ساختاری با کسب‌وکار شما
@@ -728,7 +728,7 @@ export default function App() {
             </div>
           </div>
 
-          <section className="py-16 bg-slate-50/60 backdrop-blur-md relative overflow-hidden">
+          <section className="py-16 bg-slate-50/90 relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center max-w-3xl mx-auto mb-10">
                 <span className="text-xs font-bold text-primary uppercase block mb-2">تنوع کاربری پهناور</span>
@@ -811,7 +811,7 @@ export default function App() {
           </section>
 
           {/* 8. STORY AND MISSION SECTION */}
-          <section className="py-16 bg-slate-50/60 backdrop-blur-md relative overflow-hidden mt-20" id="about-us">
+          <section className="py-16 bg-slate-50/90 relative overflow-hidden mt-20" id="about-us">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
                 <div className="space-y-4 text-right">
@@ -845,7 +845,7 @@ export default function App() {
           className="py-12 relative overflow-hidden text-right"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/95 backdrop-blur-md p-4 rounded-3xl border border-slate-100 shadow-sm gap-4">
+            <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/95 p-4 rounded-3xl border border-slate-100 shadow-sm gap-4">
               <div className="space-y-1">
                 <span className="text-[10px] text-slate-400 font-extrabold block text-right">سامانه قسطیت</span>
                 <div className="flex items-center gap-2 text-xs font-bold justify-start">
@@ -865,7 +865,7 @@ export default function App() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               <div className="lg:col-span-4 space-y-6">
-                <div className="bg-white/95 backdrop-blur-md p-6 rounded-3xl border border-slate-100 shadow-xl space-y-5">
+                <div className="bg-white/95 p-6 rounded-3xl border border-slate-100 shadow-xl space-y-5">
                   <h3 className="text-md md:text-lg font-black text-slate-900 leading-tight">مقالات </h3>
                   <p className="text-xs text-slate-500 leading-relaxed font-sans font-medium text-right">لیستی از مقالات مفید </p>
 
@@ -884,7 +884,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="lg:col-span-8 bg-white/95 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-slate-100 shadow-xl space-y-6">
+              <div className="lg:col-span-8 bg-white/95 p-6 md:p-8 rounded-3xl border border-slate-100 shadow-xl space-y-6">
                 {selectedArticleUrl ? (
                   <iframe src={selectedArticleUrl} className="w-full h-[70vh] border-0" title="article" />
                 ) : (
@@ -902,7 +902,7 @@ export default function App() {
           className="py-12 relative overflow-hidden text-right"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/95 backdrop-blur-md p-4 rounded-3xl border border-slate-100 shadow-sm gap-4">
+            <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/95 p-4 rounded-3xl border border-slate-100 shadow-sm gap-4">
               <div className="space-y-1">
                 <span className="text-[10px] text-slate-400 font-extrabold block text-right">سامانه قسطیت</span>
                 <div className="flex items-center gap-2 text-xs font-bold justify-start">
@@ -932,7 +932,7 @@ export default function App() {
           className="py-12 relative overflow-hidden text-right"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/95 backdrop-blur-md p-4 rounded-3xl border border-slate-100 shadow-sm gap-4">
+            <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/95 p-4 rounded-3xl border border-slate-100 shadow-sm gap-4">
               <div className="space-y-1">
                 <span className="text-[10px] text-slate-400 font-extrabold block text-right">شناخت ساختار پلتفرم</span>
                 <div className="flex items-center gap-2 text-xs font-bold justify-start">
@@ -961,7 +961,7 @@ export default function App() {
           className="py-12 relative overflow-hidden text-right"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/95 backdrop-blur-md p-4 rounded-3xl border border-slate-100 shadow-sm gap-4">
+            <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/95 p-4 rounded-3xl border border-slate-100 shadow-sm gap-4">
               <div className="space-y-1">
                 <span className="text-[10px] text-slate-400 font-extrabold block text-right">راه‌اندازی و تعهد الکترونیک</span>
                 <div className="flex items-center gap-2 text-xs font-bold justify-start">
@@ -981,7 +981,7 @@ export default function App() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               <div className="lg:col-span-5 space-y-6">
-                <div className="bg-white/95 backdrop-blur-md p-6 rounded-3xl border border-slate-100 shadow-xl space-y-5">
+                <div className="bg-white/95 p-6 rounded-3xl border border-slate-100 shadow-xl space-y-5">
                   <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 text-primary rounded-full text-[10px] font-extrabold">
                     <ShieldCheck className="w-3.5 h-3.5" />
                     <span>پشتیبانی مرکزی قسطیت</span>
@@ -1035,7 +1035,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="lg:col-span-7 bg-white/95 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-slate-100 shadow-xl space-y-6">
+              <div className="lg:col-span-7 bg-white/95 p-6 md:p-8 rounded-3xl border border-slate-100 shadow-xl space-y-6">
                 <div>
                   <h3 className="text-md sm:text-lg font-black text-slate-900 font-sans">فرم آنلاین درخواست مشاوره و فعال‌سازی پورتال</h3>
                   <p className="text-xs text-slate-400 mt-1 font-sans">پس از ارسال اطلاعات، کارشناسان ما ظرف کمتر از ۲۴ ساعت جهت ایجاد بستر دمو تماس می‌گیرند.</p>

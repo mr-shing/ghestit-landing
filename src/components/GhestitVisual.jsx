@@ -25,7 +25,7 @@ export default function GhestitVisual() {
 
 {/* ==================== کارت دوم: آمار کاربران و خریداران (لایه میانی) ==================== */}
 {/* اضافه شدن hover:z-50 */}
-<div className="absolute z-30 hover:z-50 w-64 h-32 md:w-62 md:h-46 bg-white/95 border border-slate-200/60 rounded-2xl shadow-2xl transform translate-y-4 translate-x-6 rotate-2 hover:rotate-0 hover:scale-105 transition-all duration-500 backdrop-blur-md group will-change-transform overflow-hidden">
+<div className="absolute z-30 hover:z-50 w-64 h-32 md:w-62 md:h-46 bg-white/95 border border-slate-200/60 rounded-2xl shadow-2xl transform translate-y-4 translate-x-6 rotate-2 hover:rotate-0 hover:scale-105 transition-all duration-500 group will-change-transform overflow-hidden">
   <img 
     src="/hero-buyer-checkout.svg" 
     alt="خرید اقساطی آنلاین با موبایل" 
@@ -46,7 +46,7 @@ export default function GhestitVisual() {
 </div>
 
       {/* ==================== المان‌های شناور جانبی ==================== */}
-      <div className="absolute top-2 left-0 md:-left-8 z-50 bg-white/80 backdrop-blur-xl border border-white/80 p-3 rounded-xl shadow-xl flex items-center gap-2.5 animate-[bounce_4s_ease-in-out_infinite]">
+      <div className="absolute top-2 left-0 md:-left-8 z-50 bg-white/95 border border-white/80 p-3 rounded-xl shadow-xl flex items-center gap-2.5 animate-[bounce_4s_ease-in-out_infinite]">
         <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
           <TrendingUp className="w-4 h-4" />
         </div>
@@ -56,7 +56,7 @@ export default function GhestitVisual() {
         </div>
       </div>
 
-      <div className="absolute bottom-4 right-0 md:-right-8 z-50 bg-white/80 backdrop-blur-xl border border-white/80 p-3 rounded-xl shadow-xl flex items-center gap-2.5 animate-[bounce_4.5s_ease-in-out_infinite_0.5s]">
+      <div className="absolute bottom-4 right-0 md:-right-8 z-50 bg-white/95 border border-white/80 p-3 rounded-xl shadow-xl flex items-center gap-2.5 animate-[bounce_4.5s_ease-in-out_infinite_0.5s]">
         <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-[#02A958]">
           <ShieldCheck className="w-4 h-4" />
         </div>

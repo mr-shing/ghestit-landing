@@ -173,7 +173,7 @@ export default function DocsSection() {
     <div className="w-full space-y-12">
     
       {/* Modern Video tutorials Section (فیلم های آموزشی) */}
-      <div className="w-full bg-white/95 backdrop-blur-md rounded-3xl border border-slate-100 shadow-xl p-6 md:p-8" id="docs-videos-area">
+      <div className="w-full bg-white/95 rounded-3xl border border-slate-100 shadow-xl p-6 md:p-8" id="docs-videos-area">
         
         {/* Section title */}
         <div className="text-right mb-8">
@@ -206,12 +206,12 @@ export default function DocsSection() {
                 />
                 
                 {/* Visual Category Label */}
-                <span className="absolute top-2.5 right-2.5 bg-slate-900/80 backdrop-blur-sm text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full">
+                <span className="absolute top-2.5 right-2.5 bg-slate-900/90 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full">
                   {vid.category}
                 </span>
 
                 {/* Duration */}
-                <span className="absolute bottom-2.5 left-2.5 bg-slate-900/80 backdrop-blur-sm text-white text-[9px] font-mono font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+                <span className="absolute bottom-2.5 left-2.5 bg-slate-900/90 text-white text-[9px] font-mono font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
                   <Clock className="w-3 h-3 text-primary" />
                   {vid.duration}
                 </span>
