@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { ArrowRight, KeyRound, MessageSquare, Phone, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, KeyRound, MessageSquare, Phone, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import { ApiError } from '../../lib/api';
 import { useFieldErrors, FieldError } from '../app/shared';
@@ -133,10 +133,8 @@ export default function Login() {
         {step === 'password' && (
           <form onSubmit={submitPassword} className="space-y-5">
             <Header icon={<KeyRound size={22} />} title="ورود با رمز عبور" subtitle={`رمز عبور حساب ${username}`} onEdit={() => goto('phone')} />
-            <Field icon={<KeyRound size={18} />} error={errors.password}>
-              <input id="password" type="password" value={password} onChange={(e) => { setPassword(e.target.value); clearError('password'); }}
-                placeholder="رمز عبور" autoFocus className="w-full bg-transparent outline-none" />
-            </Field>
+            <PasswordField id="password" value={password} error={errors.password} placeholder="رمز عبور" autoFocus
+              onChange={(v) => { setPassword(v); clearError('password'); }} />
             <Err msg={error} />
             <Submit busy={busy} label="ورود" />
             <div className="flex items-center justify-between text-sm">
@@ -184,14 +182,10 @@ export default function Login() {
           <form onSubmit={submitReset} className="space-y-5">
             <Header icon={<KeyRound size={22} />} title="رمز عبور جدید" subtitle={`کد ارسال‌شده به ${username} و رمز جدید را وارد کنید`} />
             <CodeField value={code} onChange={(v) => { setCode(v); clearError('code'); }} error={errors.code} />
-            <Field icon={<KeyRound size={18} />} error={errors.password}>
-              <input id="password" type="password" value={password} onChange={(e) => { setPassword(e.target.value); clearError('password'); }} placeholder="رمز عبور جدید"
-                className="w-full bg-transparent outline-none" />
-            </Field>
-            <Field icon={<KeyRound size={18} />} error={errors.repeatPassword}>
-              <input id="repeatPassword" type="password" value={repeatPassword} onChange={(e) => { setRepeatPassword(e.target.value); clearError('repeatPassword'); }} placeholder="تکرار رمز عبور"
-                className="w-full bg-transparent outline-none" />
-            </Field>
+            <PasswordField id="password" value={password} error={errors.password} placeholder="رمز عبور جدید"
+              onChange={(v) => { setPassword(v); clearError('password'); }} />
+            <PasswordField id="repeatPassword" value={repeatPassword} error={errors.repeatPassword} placeholder="تکرار رمز عبور"
+              onChange={(v) => { setRepeatPassword(v); clearError('repeatPassword'); }} />
             <Err msg={error} />
             <Submit busy={busy} label="ذخیره رمز جدید" />
             <ResendButton resendIn={resendIn} onClick={handleResend} />
@@ -234,6 +228,23 @@ function Field({ children, icon, error }: { children: React.ReactNode; icon?: Re
       </div>
       <FieldError msg={error} />
     </div>
+  );
+}
+
+function PasswordField({ id, value, onChange, error, placeholder, autoFocus }: {
+  id: string; value: string; onChange: (v: string) => void; error?: string; placeholder: string; autoFocus?: boolean;
+}) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <Field icon={<KeyRound size={18} />} error={error}>
+      <input id={id} type={visible ? 'text' : 'password'} value={value} onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder} autoFocus={autoFocus} className="w-full bg-transparent outline-none" />
+      <button type="button" onClick={() => setVisible((v) => !v)} tabIndex={-1}
+        aria-label={visible ? 'پنهان کردن رمز عبور' : 'نمایش رمز عبور'}
+        className="text-slate-400 hover:text-slate-600 transition-colors">
+        {visible ? <EyeOff size={18} /> : <Eye size={18} />}
+      </button>
+    </Field>
   );
 }
 
