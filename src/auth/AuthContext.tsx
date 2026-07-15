@@ -65,8 +65,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const json = await api.post('site/sign-in', {
       SigninForm: { username, ...(verifyCode ? { verifyCode } : {}) },
     }, { auth: false });
+    // Backend may send the mode as a string ('login'/'signup') or the legacy
+    // numeric SigninForm constant (1 = login, 2 = signup). Normalize both.
+    const mode: SignInMode = json.mode === 'signup' || json.mode === 2 ? 'signup' : 'login';
     return {
-      mode: json.mode as SignInMode,
+      mode,
       username: json.username ?? username,
       hasPassword: !!json.hasPassword,
     };

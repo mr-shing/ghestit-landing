@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { ArrowRight, Eye, EyeOff, KeyRound, MessageSquare, Phone, ShieldCheck } from 'lucide-react';
+import { ArrowRight, CreditCard, Eye, EyeOff, KeyRound, MessageSquare, Phone, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import { ApiError } from '../../lib/api';
 import { useFieldErrors, FieldError } from '../app/shared';
@@ -8,6 +8,8 @@ import { useFieldErrors, FieldError } from '../app/shared';
 type Step = 'phone' | 'password' | 'otp' | 'signup' | 'forgot' | 'reset';
 
 const RESEND_SECONDS = 90;
+// SMS one-time code length (MgSignIn generates a 4-digit code).
+const OTP_LENGTH = 4;
 // Prefill the login field with the last-used phone number. Only the phone is
 // stored — never the password.
 const LAST_PHONE_KEY = 'gst_last_phone';
@@ -23,12 +25,15 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [code, setCode] = useState('');
-  const [fullName, setFullName] = useState('');
+  // Signup requires KYC identity data; first/last name are resolved server-side
+  // from the national id, so only the id + Jalali birthdate are collected here.
+  const [nationalId, setNationalId] = useState('');
+  const [birthDate, setBirthDate] = useState(''); // Jalali YYYY/MM/DD
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [resendIn, setResendIn] = useState(0);
   const { errors, clearError, reset: resetErrors, showErrors, showApiErrors } =
-    useFieldErrors(['username', 'full_name', 'code', 'password', 'repeatPassword']);
+    useFieldErrors(['username', 'national_id', 'birthDate', 'code', 'password', 'repeatPassword']);
 
   const timer = useRef<number | null>(null);
   const startResendTimer = () => {
@@ -44,11 +49,18 @@ export default function Login() {
   useEffect(() => () => { if (timer.current) window.clearInterval(timer.current); }, []);
 
   const fail = (e: unknown, fallback = 'خطایی رخ داد') => {
-    if (showApiErrors(e)) return;
+    // Highlight offending fields AND always surface a banner: field errors can
+    // land on inputs not rendered in the current step (e.g. a `username` error
+    // on the OTP form), which would otherwise show nothing at all.
+    showApiErrors(e);
     if (e instanceof ApiError) setError(e.message || fallback);
     else setError(fallback);
   };
-  const goto = (s: Step) => { setError(null); resetErrors(); setCode(''); setPassword(''); setStep(s); };
+  const goto = (s: Step) => {
+    setError(null); resetErrors(); setCode(''); setPassword('');
+    setNationalId(''); setBirthDate('');
+    setStep(s);
+  };
   const done = () => navigate(redirectTo, { replace: true });
 
   const submitPhone = async (e: React.FormEvent) => {
@@ -72,15 +84,51 @@ export default function Login() {
     catch (e) { fail(e, 'رمز عبور صحیح نیست'); } finally { setBusy(false); }
   };
 
-  const submitOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitOtp = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (busy) return;
+    if (step === 'signup') {
+      const errs: Record<string, string> = {};
+      if (!/^\d{10}$/.test(nationalId)) errs.national_id = 'کد ملی ۱۰ رقمی معتبر وارد کنید';
+      if (!/^\d{4}\/\d{2}\/\d{2}$/.test(birthDate)) errs.birthDate = 'تاریخ تولد را کامل وارد کنید';
+      if (code.length < OTP_LENGTH) errs.code = 'کد پیامک را وارد کنید';
+      if (Object.keys(errs).length) { setError(null); showErrors(errs); return; }
+    }
     setError(null); setBusy(true);
     try {
-      if (step === 'signup') await auth.signup(username, code, fullName ? { full_name: fullName } : {});
+      if (step === 'signup') await auth.signup(username, code, { national_id: nationalId, birthDate });
       else await auth.loginByCode(username, code);
       done();
     } catch (e) { fail(e, 'کد وارد شده صحیح نیست'); } finally { setBusy(false); }
   };
+
+  // Auto-submit the login OTP once all digits are in — the code is 4 digits.
+  // Skipped for signup (that step needs the name field too).
+  const autoSubmitted = useRef(false);
+  useEffect(() => {
+    if (step === 'otp' && code.length === OTP_LENGTH && !busy && !autoSubmitted.current) {
+      autoSubmitted.current = true;
+      submitOtp();
+    }
+    if (code.length < OTP_LENGTH) autoSubmitted.current = false;
+  }, [code, step]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // SMS autofill: read the one-time code straight from the incoming SMS via the
+  // WebOTP API (Android Chrome). No-op where unsupported; the manual field and
+  // iOS `autocomplete="one-time-code"` suggestion still work.
+  useEffect(() => {
+    if (step !== 'otp' && step !== 'signup' && step !== 'reset') return;
+    if (!('OTPCredential' in window)) return;
+    const ac = new AbortController();
+    navigator.credentials
+      .get({ otp: { transport: ['sms'] }, signal: ac.signal } as CredentialRequestOptions)
+      .then((cred) => {
+        const otp = (cred as unknown as { code?: string })?.code;
+        if (otp) { setCode(otp.replace(/\D/g, '').slice(0, 6)); clearError('code'); }
+      })
+      .catch(() => { /* aborted or no SMS — ignore */ });
+    return () => ac.abort();
+  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const switchToCode = async () => {
     setError(null); setBusy(true);
@@ -153,10 +201,15 @@ export default function Login() {
               onEdit={() => goto('phone')}
             />
             {step === 'signup' && (
-              <Field error={errors.full_name}>
-                <input id="full_name" value={fullName} onChange={(e) => { setFullName(e.target.value); clearError('full_name'); }} placeholder="نام و نام خانوادگی"
-                  className="w-full bg-transparent text-center outline-none" />
-              </Field>
+              <>
+                <Field icon={<CreditCard size={18} />} error={errors.national_id}>
+                  <input id="national_id" value={nationalId} dir="ltr" inputMode="numeric"
+                    onChange={(e) => { setNationalId(e.target.value.replace(/\D/g, '').slice(0, 10)); clearError('national_id'); }}
+                    placeholder="کد ملی" className="w-full bg-transparent text-center tracking-widest outline-none" />
+                </Field>
+                <JalaliDateField error={errors.birthDate}
+                  onChange={(v) => { setBirthDate(v); clearError('birthDate'); }} />
+              </>
             )}
             <CodeField value={code} onChange={(v) => { setCode(v); clearError('code'); }} error={errors.code} />
             <Err msg={error} />
@@ -252,9 +305,44 @@ function CodeField({ value, onChange, error }: { value: string; onChange: (v: st
   return (
     <Field error={error}>
       <input id="code" value={value} onChange={(e) => onChange(e.target.value.replace(/\D/g, '').slice(0, 6))}
-        placeholder="_ _ _ _ _ _" dir="ltr" inputMode="numeric" autoFocus
+        placeholder="_ _ _ _" dir="ltr" inputMode="numeric" autoFocus
+        autoComplete="one-time-code" name="one-time-code"
         className="w-full bg-transparent text-center tracking-[0.5em] text-xl outline-none" />
     </Field>
+  );
+}
+
+// Jalali birthdate entered as three numeric boxes (year / month / day). Emits a
+// canonical `YYYY/MM/DD` string once all three are filled, otherwise ''. The
+// component remounts when the signup step is left, so it needs no reset prop.
+function JalaliDateField({ onChange, error }: { onChange: (v: string) => void; error?: string }) {
+  const [y, setY] = useState('');
+  const [m, setM] = useState('');
+  const [d, setD] = useState('');
+  const emit = (ny: string, nm: string, nd: string) => {
+    onChange(ny.length === 4 && nm && nd ? `${ny}/${nm.padStart(2, '0')}/${nd.padStart(2, '0')}` : '');
+  };
+  const box = 'w-full bg-transparent text-center outline-none';
+  return (
+    <div>
+      <div id="birthDate" className={`flex items-center gap-1 rounded-2xl px-4 py-3 transition-colors ${
+        error ? 'bg-red-50 border-2 border-red-400 focus-within:border-red-500'
+              : 'bg-slate-50 border border-slate-200 focus-within:border-primary'}`} dir="ltr">
+        <input value={y} inputMode="numeric" placeholder="۱۳۷۰"
+          onChange={(e) => { const v = e.target.value.replace(/\D/g, '').slice(0, 4); setY(v); emit(v, m, d); }}
+          className={box} aria-label="سال تولد" />
+        <span className="text-slate-300">/</span>
+        <input value={m} inputMode="numeric" placeholder="۰۵"
+          onChange={(e) => { const v = e.target.value.replace(/\D/g, '').slice(0, 2); setM(v); emit(y, v, d); }}
+          className={box} aria-label="ماه تولد" />
+        <span className="text-slate-300">/</span>
+        <input value={d} inputMode="numeric" placeholder="۱۲"
+          onChange={(e) => { const v = e.target.value.replace(/\D/g, '').slice(0, 2); setD(v); emit(y, m, v); }}
+          className={box} aria-label="روز تولد" />
+      </div>
+      <p className="mt-1 text-xs text-slate-400">تاریخ تولد شمسی — مثال: ۱۳۷۰/۰۵/۱۲</p>
+      <FieldError msg={error} />
+    </div>
   );
 }
 
