@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /login
+Disallow: /payment-result
+
+Sitemap: https://ghestit.com/sitemap.xml

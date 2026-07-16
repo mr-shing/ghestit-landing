@@ -272,6 +272,7 @@ export default function App() {
   };
 
   const articles = [
+    { id: 'customer-credit-scoring', title: 'اعتبارسنجی مشتریان در فروش اقساطی', href: '/articles/customer-credit-scoring-installment.html' },
     { id: 'what-is-ghestit', title: 'تاثیر فروش اقساطی در رشد فروش', href: '/articles/installment-sales-impact.html' },
     { id: 'how-ghestit-improves-productivity', title: 'تفاوت کارمزد بانکی و کارمزد بازاری', href: '/articles/bank-vs-market-fees.html' },
     { id: 'privacy-performance-security', title: "چالش های فروش اقساطی در ایران", href: '/articles/installment-sales-challenges-iran.html' }
@@ -872,12 +873,13 @@ export default function App() {
                   <ul className="mt-4 space-y-2">
                     {articles.map((a) => (
                       <li key={a.id}>
-                        <button
-                          onClick={() => setSelectedArticleUrl(a.href)}
-                          className={`w-full text-right text-sm font-bold py-2 rounded-lg transition-colors ${selectedArticleUrl === a.href ? 'text-primary' : 'text-slate-700 hover:text-primary'}`}
+                        <a
+                          href={a.href}
+                          onClick={(e) => { e.preventDefault(); setSelectedArticleUrl(a.href); }}
+                          className={`block w-full text-right text-sm font-bold py-2 rounded-lg transition-colors ${selectedArticleUrl === a.href ? 'text-primary' : 'text-slate-700 hover:text-primary'}`}
                         >
                           {a.title}
-                        </button>
+                        </a>
                       </li>
                     ))}
                   </ul>

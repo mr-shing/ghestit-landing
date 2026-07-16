@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
@@ -58,6 +59,10 @@ const sections: { title: string; items: string[] }[] = [
 ];
 
 export default function Terms() {
+  useEffect(() => {
+    document.title = 'قوانین و مقررات | قسطیت';
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#fafafa]" dir="rtl">
       <div className="max-w-3xl mx-auto px-4 py-10">

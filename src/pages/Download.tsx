@@ -53,6 +53,10 @@ export default function Download() {
   const { canInstall, install, installed } = useInstallPrompt();
   const ios = typeof navigator !== 'undefined' && isIOS();
 
+  useEffect(() => {
+    document.title = 'دانلود اپلیکیشن قسطیت | نصب برنامه مدیریت و پرداخت اقساط';
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#fafafa] to-emerald-50/40" dir="rtl">
       <div className="max-w-3xl mx-auto px-4 py-10">
