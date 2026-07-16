@@ -1,0 +1,82 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - master
+  # Manual redeploy of a branch without pushing a new commit.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deploy per branch at a time; a queued push waits instead of racing
+# the in-flight deploy on the same directory.
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build & Validate
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install Packages
+        run: npm ci
+
+      - name: Type check
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+  deploy:
+    name: Deploy ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: 22
+          script: |
+            set -eu
+
+            BRANCH="${{ github.ref_name }}"
+
+            if [ "$BRANCH" = "master" ]; then
+              DEPLOY_DIR=/var/www/ghestit-landing
+            else
+              echo "Branch $BRANCH not configured for deploy"
+              exit 1
+            fi
+
+            # nvm is not on the default non-interactive PATH — source it so npm/node
+            # resolve to the server's pinned version.
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+            cd "$DEPLOY_DIR"
+
+            # Mirror origin exactly. Vite wipes dist/ on every build, and tracked
+            # assets (e.g. public/downloads/*.apk) come back from the reset, so a
+            # hard reset is safe and keeps the deploy dir clean.
+            git fetch origin "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+
+            npm ci
+            npm run build
+
+            echo "Deploy of $BRANCH to $DEPLOY_DIR completed."
