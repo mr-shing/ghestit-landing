@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { setPageSeo } from '../lib/seo';
 
 const sections: { title: string; items: string[] }[] = [
   {
@@ -60,7 +61,11 @@ const sections: { title: string; items: string[] }[] = [
 
 export default function Terms() {
   useEffect(() => {
-    document.title = 'قوانین و مقررات | قسطیت';
+    setPageSeo({
+      title: 'قوانین و مقررات | قسطیت',
+      description: 'قوانین و مقررات استفاده از قسطیت؛ شرایط ثبت‌نام، خرید اقساطی، بازگشت کالا و تعهدات کاربران.',
+      path: '/terms',
+    });
   }, []);
 
   return (

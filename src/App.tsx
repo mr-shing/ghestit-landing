@@ -293,9 +293,9 @@ export default function App() {
           {/* Brand Logo & Name */}
           <a href="/" className="flex items-center gap-3 transition-opacity hover:opacity-90">
             <img 
-              src="/logoghestit.png" 
-              className="w-13 h-13" 
-              alt="Logo" 
+              src="/logoghestit.png"
+              className="w-13 h-13"
+              alt="لوگو قسطیت"
             />
           </a>
 
@@ -1166,7 +1166,7 @@ export default function App() {
     <img 
       referrerPolicy="origin" 
       src="https://trustseal.enamad.ir/logo.aspx?id=528242&Code=74pEs6XcL5NXe46xkHU1nmUUi9truKGG" 
-      alt="enamad" 
+      alt="نماد اعتماد الکترونیکی (enamad) قسطیت"
       style={{ cursor: 'pointer', height: '55px' }} 
     />
   </a>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
+import { setPageSeo } from '../lib/seo';
 import {
   ArrowRight, Download as DownloadIcon, Smartphone, Share, PlusSquare,
   MonitorSmartphone, CheckCircle2, Apple, ShieldCheck, Chrome,
@@ -54,7 +55,11 @@ export default function Download() {
   const ios = typeof navigator !== 'undefined' && isIOS();
 
   useEffect(() => {
-    document.title = 'دانلود اپلیکیشن قسطیت | نصب برنامه مدیریت و پرداخت اقساط';
+    setPageSeo({
+      title: 'دانلود اپلیکیشن قسطیت | نصب برنامه مدیریت و پرداخت اقساط',
+      description: 'دانلود و نصب اپلیکیشن قسطیت برای اندروید و iOS؛ مدیریت اقساط، پرداخت آنلاین اقساط و اعتبارسنجی در گوشی شما.',
+      path: '/download',
+    });
   }, []);
 
   return (

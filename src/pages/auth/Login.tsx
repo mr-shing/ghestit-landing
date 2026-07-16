@@ -4,6 +4,7 @@ import { ArrowRight, CreditCard, Eye, EyeOff, KeyRound, MessageSquare, Phone, Sh
 import { useAuth } from '../../auth/AuthContext';
 import { ApiError } from '../../lib/api';
 import { useFieldErrors, FieldError } from '../app/shared';
+import { setPageSeo } from '../../lib/seo';
 
 type Step = 'phone' | 'password' | 'otp' | 'signup' | 'kyc' | 'forgot' | 'reset';
 
@@ -48,6 +49,7 @@ export default function Login() {
     }, 1000);
   };
   useEffect(() => () => { if (timer.current) window.clearInterval(timer.current); }, []);
+  useEffect(() => { setPageSeo({ title: 'ورود و ثبت‌نام | قسطیت', noindex: true }); }, []);
 
   const fail = (e: unknown, fallback = 'خطایی رخ داد') => {
     // Highlight offending fields AND always surface a banner: field errors can
