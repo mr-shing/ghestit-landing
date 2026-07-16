@@ -5,7 +5,7 @@ import { useAuth } from '../../auth/AuthContext';
 import { ApiError } from '../../lib/api';
 import { useFieldErrors, FieldError } from '../app/shared';
 
-type Step = 'phone' | 'password' | 'otp' | 'signup' | 'forgot' | 'reset';
+type Step = 'phone' | 'password' | 'otp' | 'signup' | 'kyc' | 'forgot' | 'reset';
 
 const RESEND_SECONDS = 90;
 // SMS one-time code length (MgSignIn generates a 4-digit code).
@@ -29,6 +29,7 @@ export default function Login() {
   // from the national id, so only the id + Jalali birthdate are collected here.
   const [nationalId, setNationalId] = useState('');
   const [birthDate, setBirthDate] = useState(''); // Jalali YYYY/MM/DD
+  const [verifyToken, setVerifyToken] = useState(''); // proof-of-OTP for the KYC step
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [resendIn, setResendIn] = useState(0);
@@ -58,7 +59,7 @@ export default function Login() {
   };
   const goto = (s: Step) => {
     setError(null); resetErrors(); setCode(''); setPassword('');
-    setNationalId(''); setBirthDate('');
+    setNationalId(''); setBirthDate(''); setVerifyToken('');
     setStep(s);
   };
   const done = () => navigate(redirectTo, { replace: true });
@@ -84,29 +85,46 @@ export default function Login() {
     catch (e) { fail(e, 'رمز عبور صحیح نیست'); } finally { setBusy(false); }
   };
 
+  // OTP step. For login: log in. For signup: verify the code, then advance to
+  // the KYC step carrying the returned proof-of-verification token.
   const submitOtp = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (busy) return;
-    if (step === 'signup') {
-      const errs: Record<string, string> = {};
-      if (!/^\d{10}$/.test(nationalId)) errs.national_id = 'کد ملی ۱۰ رقمی معتبر وارد کنید';
-      if (!/^\d{4}\/\d{2}\/\d{2}$/.test(birthDate)) errs.birthDate = 'تاریخ تولد را کامل وارد کنید';
-      if (code.length < OTP_LENGTH) errs.code = 'کد پیامک را وارد کنید';
-      if (Object.keys(errs).length) { setError(null); showErrors(errs); return; }
-    }
     setError(null); setBusy(true);
     try {
-      if (step === 'signup') await auth.signup(username, code, { national_id: nationalId, birthDate });
-      else await auth.loginByCode(username, code);
-      done();
+      if (step === 'signup') {
+        const token = await auth.verifySignupCode(username, code);
+        setVerifyToken(token);
+        resetErrors(); setNationalId(''); setBirthDate('');
+        setStep('kyc');
+      } else {
+        await auth.loginByCode(username, code);
+        done();
+      }
     } catch (e) { fail(e, 'کد وارد شده صحیح نیست'); } finally { setBusy(false); }
+  };
+
+  // KYC step: national id + Jalali birthdate. Server resolves the name and
+  // creates the account using the OTP proof token from the previous step.
+  const submitKyc = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (busy) return;
+    const errs: Record<string, string> = {};
+    if (!/^\d{10}$/.test(nationalId)) errs.national_id = 'کد ملی ۱۰ رقمی معتبر وارد کنید';
+    if (!/^\d{4}\/\d{2}\/\d{2}$/.test(birthDate)) errs.birthDate = 'تاریخ تولد را کامل وارد کنید';
+    if (Object.keys(errs).length) { setError(null); showErrors(errs); return; }
+    setError(null); setBusy(true);
+    try {
+      await auth.signup(username, verifyToken, { national_id: nationalId, birthDate });
+      done();
+    } catch (e) { fail(e, 'اطلاعات هویتی تأیید نشد'); } finally { setBusy(false); }
   };
 
   // Auto-submit the login OTP once all digits are in — the code is 4 digits.
   // Skipped for signup (that step needs the name field too).
   const autoSubmitted = useRef(false);
   useEffect(() => {
-    if (step === 'otp' && code.length === OTP_LENGTH && !busy && !autoSubmitted.current) {
+    if ((step === 'otp' || step === 'signup') && code.length === OTP_LENGTH && !busy && !autoSubmitted.current) {
       autoSubmitted.current = true;
       submitOtp();
     }
@@ -200,21 +218,29 @@ export default function Login() {
               subtitle={`کد ارسال‌شده به ${username} را وارد کنید`}
               onEdit={() => goto('phone')}
             />
-            {step === 'signup' && (
-              <>
-                <Field icon={<CreditCard size={18} />} error={errors.national_id}>
-                  <input id="national_id" value={nationalId} dir="ltr" inputMode="numeric"
-                    onChange={(e) => { setNationalId(e.target.value.replace(/\D/g, '').slice(0, 10)); clearError('national_id'); }}
-                    placeholder="کد ملی" className="w-full bg-transparent text-center tracking-widest outline-none" />
-                </Field>
-                <JalaliDateField error={errors.birthDate}
-                  onChange={(v) => { setBirthDate(v); clearError('birthDate'); }} />
-              </>
-            )}
             <CodeField value={code} onChange={(v) => { setCode(v); clearError('code'); }} error={errors.code} />
             <Err msg={error} />
-            <Submit busy={busy} label={step === 'signup' ? 'ثبت‌نام و ورود' : 'ورود'} />
+            <Submit busy={busy} label={step === 'signup' ? 'تأیید و ادامه' : 'ورود'} />
             <ResendButton resendIn={resendIn} onClick={handleResend} />
+          </form>
+        )}
+
+        {step === 'kyc' && (
+          <form onSubmit={submitKyc} className="space-y-5">
+            <Header
+              icon={<CreditCard size={22} />}
+              title="تکمیل ثبت‌نام"
+              subtitle="کد ملی و تاریخ تولد خود را وارد کنید"
+            />
+            <Field icon={<CreditCard size={18} />} error={errors.national_id}>
+              <input id="national_id" value={nationalId} dir="ltr" inputMode="numeric"
+                onChange={(e) => { setNationalId(e.target.value.replace(/\D/g, '').slice(0, 10)); clearError('national_id'); }}
+                placeholder="کد ملی" autoFocus className="w-full bg-transparent text-center tracking-widest outline-none" />
+            </Field>
+            <JalaliDateField error={errors.birthDate}
+              onChange={(v) => { setBirthDate(v); clearError('birthDate'); }} />
+            <Err msg={error} />
+            <Submit busy={busy} label="ثبت‌نام و ورود" />
           </form>
         )}
 

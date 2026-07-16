@@ -34,8 +34,10 @@ type AuthContextValue = {
   loginByCode: (username: string, code: string) => Promise<void>;
   /** Step 2b: existing user with a password. */
   loginByPassword: (username: string, password: string) => Promise<void>;
-  /** Step 2c: new user, confirm OTP code to create account. */
-  signup: (username: string, code: string, extra?: Record<string, unknown>) => Promise<void>;
+  /** Step 2c-i: new user, verify the SMS OTP. Returns a short-lived signup token. */
+  verifySignupCode: (username: string, code: string) => Promise<string>;
+  /** Step 2c-ii: new user, submit KYC with the token from verifySignupCode. */
+  signup: (username: string, verifyToken: string, extra?: Record<string, unknown>) => Promise<void>;
   /** Re-send the SMS code for the pending username. */
   resendCode: (username: string) => Promise<void>;
   /** Forgot password: send a reset code to the mobile. */
@@ -99,8 +101,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, { auth: false, query: { username } });
   }, []);
 
-  const signup = useCallback(async (username: string, code: string, extra: Record<string, unknown> = {}): Promise<void> => {
-    const json = await api.post('site/signup', { SignupForm: { username, code, ...extra } }, {
+  const verifySignupCode = useCallback(async (username: string, code: string): Promise<string> => {
+    const json = await api.post('site/verify-signup-code', { username, code }, { auth: false });
+    return String(json.verifyToken ?? json.data?.verifyToken ?? '');
+  }, []);
+
+  const signup = useCallback(async (username: string, verifyToken: string, extra: Record<string, unknown> = {}): Promise<void> => {
+    const json = await api.post('site/signup', { SignupForm: { username, verifyToken, ...extra } }, {
       auth: false,
       query: { username },
     });
@@ -131,12 +138,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     loginByCode,
     loginByPassword,
+    verifySignupCode,
     signup,
     resendCode,
     requestPasswordReset,
     resetPassword,
     logout,
-  }), [user, signIn, loginByCode, loginByPassword, signup, resendCode, requestPasswordReset, resetPassword, logout]);
+  }), [user, signIn, loginByCode, loginByPassword, verifySignupCode, signup, resendCode, requestPasswordReset, resetPassword, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
