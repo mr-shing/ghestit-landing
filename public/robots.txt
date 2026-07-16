@@ -4,4 +4,31 @@ Disallow: /app/
 Disallow: /login
 Disallow: /payment-result
 
+# AI / LLM agents — explicitly allowed to read the site for answering and
+# citing (Google AI Overviews/Gemini, ChatGPT, Claude, Perplexity, Apple).
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# AI guide: https://ghestit.com/llms.txt
 Sitemap: https://ghestit.com/sitemap.xml
