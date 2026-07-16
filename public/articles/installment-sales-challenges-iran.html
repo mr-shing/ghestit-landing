@@ -309,5 +309,18 @@
         </div>
     </div>
 
+    <script>
+      // Inside the ghestit SPA the article lives in an iframe: hand related-article
+      // clicks to the parent so it swaps the panel and keeps the sidebar in sync.
+      // Opened standalone (no parent frame), links behave normally.
+      if (window.parent !== window.self) {
+        document.addEventListener('click', function (e) {
+          var a = e.target.closest && e.target.closest('a[href^="/articles/"]');
+          if (!a) return;
+          e.preventDefault();
+          window.parent.postMessage({ type: 'ghestit:navigate-article', href: a.getAttribute('href') }, window.location.origin);
+        });
+      }
+    </script>
 </body>
 </html>

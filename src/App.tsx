@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Building2, 
@@ -95,6 +95,22 @@ export default function App() {
   /* ۱. آپدیت تایپ وضعیت برای پشتیبانی از صفحه جدید */
   const [currentView, setCurrentView] = useState<'home' | 'docs' | 'contact' | 'aboutus' | 'articles'>('home');
   const [selectedArticleUrl, setSelectedArticleUrl] = useState<string | null>(null);
+
+  // Articles render in an <iframe>. A "مقالات مرتبط" link inside the frame posts
+  // back here so we swap the panel (and keep the sidebar highlight in sync)
+  // instead of the link doing a full-page load to the bare .html.
+  useEffect(() => {
+    function onMessage(e: MessageEvent) {
+      if (e.origin !== window.location.origin) return;
+      const data = e.data as { type?: string; href?: string } | null;
+      if (data && data.type === 'ghestit:navigate-article' && typeof data.href === 'string' && data.href.startsWith('/articles/')) {
+        setCurrentView('articles');
+        setSelectedArticleUrl(data.href);
+      }
+    }
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, []);
 
   // Flexible view and smooth scroll navigation helper
   const navigateToView = (view: 'home' | 'docs' | 'contact' | 'aboutus' | 'articles', anchorId?: string) => {
