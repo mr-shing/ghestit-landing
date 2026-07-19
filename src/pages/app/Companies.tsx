@@ -19,7 +19,6 @@ function CreateCompanyButton() {
 type Company = {
   id: number;
   name: string;
-  host_name: string;
   panelUrl: string;
   statusLabel: string;
   statusColor: string;
@@ -67,7 +66,6 @@ export default function Companies() {
                     </span>
                     <h3 className="font-black text-slate-800 truncate">{c.name}</h3>
                   </div>
-                  <p className="text-xs text-slate-400 mt-1.5 truncate" dir="ltr">{c.host_name}</p>
                 </div>
                 <StatusBadge text={c.statusLabel} tone={c.statusColor} />
               </div>

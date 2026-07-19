@@ -250,6 +250,48 @@ export default function App() {
       title: 'کوتاه‌ترین زمان تسویه',
       description: 'تسویه قسط در کوتاه ترین زمان ممکن به حساب متصل پذیرنده',
       iconName: 'ShieldCheck'
+    },
+    {
+      id: 'f7',
+      title: 'اپلیکیشن موبایل مشتری',
+      description: 'مشاهده اقساط، سررسیدها و پرداخت آنلاین از طریق اپ اندروید و نسخه وب',
+      iconName: 'Download'
+    },
+    {
+      id: 'f8',
+      title: 'گزارش‌ها و داشبورد مدیریتی',
+      description: 'گزارش فروش اقساطی، مطالبات معوق و عملکرد لحظه‌ای در یک داشبورد',
+      iconName: 'LayoutDashboard'
+    },
+    {
+      id: 'f9',
+      title: 'مدیریت کاربران و سطوح دسترسی',
+      description: 'تعریف کاربران، شعب و نقش‌ها با دسترسی‌های چندسطحی و امن',
+      iconName: 'Lock'
+    },
+    {
+      id: 'f10',
+      title: 'پروفایل مشتری و پیگیری معوقات',
+      description: 'سابقه خرید، وضعیت حساب و پیگیری خودکار اقساط پرداخت‌نشده',
+      iconName: 'ListChecks'
+    },
+    {
+      id: 'f11',
+      title: 'قرارداد اقساطی منعطف',
+      description: 'تعریف تعداد اقساط، مبلغ، کارمزد و دوره تنفس به‌صورت دلخواه برای هر قرارداد',
+      iconName: 'FileText'
+    },
+    {
+      id: 'f12',
+      title: 'تسویه ترکیبی و پیش‌پرداخت',
+      description: 'ترکیب پیش‌پرداخت، اقساط و پرداخت نقدی در یک قرارداد',
+      iconName: 'CheckCircle2'
+    },
+    {
+      id: 'f13',
+      title: 'خروجی و پشتیبان‌گیری گزارش‌ها',
+      description: 'دریافت خروجی گزارش‌ها و پشتیبان‌گیری از اطلاعات به‌صورت امن',
+      iconName: 'Bookmark'
     }
   ];
 
@@ -590,6 +632,10 @@ export default function App() {
                       {feat.id === 'f4' && <Coins className="w-5 h-5" />}
                       {feat.id === 'f5' && <UserCheck className="w-5 h-5" />}
                       {feat.id === 'f6' && <ShieldCheck className="w-5 h-5" />}
+                      {feat.id === 'f7' && <Download className="w-5 h-5" />}
+                      {feat.id === 'f8' && <LayoutDashboard className="w-5 h-5" />}
+                      {feat.id === 'f9' && <Lock className="w-5 h-5" />}
+                      {feat.id === 'f10' && <ListChecks className="w-5 h-5" />}
                     </div>
 
                     <h3 className="text-sm font-semibold text-slate-800 mb-2 font-sans group-hover:text-primary transition-colors">

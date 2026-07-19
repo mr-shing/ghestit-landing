@@ -18,7 +18,6 @@ export default function CreateCompany() {
   const [type, setType] = useState<number | null>(null);
   const [category, setCategory] = useState('');
   const [name, setName] = useState('');
-  const [host, setHost] = useState('');
   const [phone, setPhone] = useState('');
   const [iban, setIban] = useState('');
   const [provinceId, setProvinceId] = useState('');
@@ -28,7 +27,7 @@ export default function CreateCompany() {
 
   const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
   const { errors: fieldErrors, clearError, reset: resetErrors, showApiErrors } = useFieldErrors(
-    ['business_category', 'name', 'host_name', 'phone', 'iban', 'province_id', 'city_id', 'address'],
+    ['business_category', 'name', 'phone', 'iban', 'province_id', 'city_id', 'address'],
   );
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -65,7 +64,7 @@ export default function CreateCompany() {
     try {
       const res = await api.post('company/create', {
         CompanyForm: {
-          type, business_category: category, name, host_name: host, phone,
+          type, business_category: category, name, phone,
           iban: isPro ? iban : '', province_id: provinceId, city_id: cityId,
           address, lat: loc.lat, long: loc.lng,
         },
@@ -117,17 +116,6 @@ export default function CreateCompany() {
           <Select name="business_category" label="دسته‌بندی صنف" value={category} onChange={(v) => { setCategory(v); clearError('business_category'); }} error={fieldErrors.business_category} options={meta.categories.map((c) => ({ value: c, label: c }))} placeholder="انتخاب کنید" />
 
           <Input name="name" label="نام کسب‌وکار" value={name} onChange={(v) => { setName(v); clearError('name'); }} error={fieldErrors.name} placeholder="مثلاً: فروشگاه فرش شاهکار" />
-
-          <div>
-            <Label text="آدرس وب‌سایت (زیردامنه)" />
-            <div className="flex items-stretch">
-              <span className="inline-flex items-center bg-slate-100 border border-l-0 border-slate-200 rounded-r-xl px-3 text-slate-500 text-sm" dir="ltr">.ghestit.com</span>
-              <input id="host_name" value={host} onChange={(e) => { setHost(e.target.value.replace(/[^a-zA-Z0-9-]/g, '')); clearError('host_name'); }} dir="ltr"
-                placeholder="shahkar" aria-invalid={!!fieldErrors.host_name}
-                className={`flex-1 rounded-l-xl px-4 py-3 outline-none text-left transition-colors ${fieldErrors.host_name ? 'bg-red-50 border-2 border-red-400 focus:border-red-500' : 'bg-slate-50 border border-slate-200 focus:border-primary'}`} />
-            </div>
-            <FieldError id="host_name-error" msg={fieldErrors.host_name} />
-          </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
             <Input name="phone" label="تلفن" value={phone} onChange={(v) => { setPhone(v.replace(/\D/g, '')); clearError('phone'); }} error={fieldErrors.phone} dir="ltr" />
