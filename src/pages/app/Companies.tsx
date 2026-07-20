@@ -82,7 +82,7 @@ export default function Companies() {
                     onClick={() => payCompany(c.id)}
                     className="flex-1 flex items-center justify-center gap-1.5 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl py-2.5 text-sm transition-colors"
                   >
-                    <CreditCard size={16} /> پرداخت {money(c.price)} تومان
+                    <CreditCard size={16} /> پرداخت {money(c.price / 10)} تومان
                   </button>
                 ) : (
                   <a

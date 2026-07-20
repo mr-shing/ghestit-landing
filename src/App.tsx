@@ -54,6 +54,27 @@ export default function App() {
   const [selectedPlanDetail, setSelectedPlanDetail] = useState<string | null>(null);
   const [consultBusy, setConsultBusy] = useState<boolean>(false);
   const loggedIn = !!tokenStore.token; // hide login CTA + route to panel when signed in
+
+  // Live plan prices (Rial, keyed by plan type) — settings-driven, editable in admin.
+  const [planPrices, setPlanPrices] = useState<Record<number, number>>({});
+  useEffect(() => {
+    api.get<{ plans: { type: number; priceRial: number }[] }>('site/plans', undefined, { auth: false })
+      .then((res) => {
+        const map: Record<number, number> = {};
+        for (const p of res.plans ?? []) map[p.type] = p.priceRial;
+        setPlanPrices(map);
+      })
+      .catch(() => { /* keep hardcoded fallback prices */ });
+  }, []);
+
+  // Rial -> "۱۲ میلیون تومان" (falls back to plain Toman formatting off round millions).
+  const planPriceLabel = (type: number, fallback: string): string => {
+    const rial = planPrices[type];
+    if (!rial) return fallback;
+    const toman = rial / 10;
+    const fa = (n: number) => new Intl.NumberFormat('fa-IR').format(n);
+    return toman % 1_000_000 === 0 ? `${fa(toman / 1_000_000)} میلیون تومان` : `${fa(toman)} تومان`;
+  };
   const { errors: consultErrors, clearError: clearConsultError, reset: resetConsultErrors, showErrors: showConsultErrors, showApiErrors: showConsultApiErrors } =
     useFieldErrors(['name', 'business', 'phone']);
 
@@ -134,8 +155,8 @@ export default function App() {
     {
       id: 'basic',
       name: 'پایه',
-      price: '۱۲ میلیون تومان',
-      originalPriceNum: 12000000,
+      price: planPriceLabel(2, '۱۲ میلیون تومان'),
+      originalPriceNum: (planPrices[2] ?? 120_000_000) / 10,
       period: 'در سال',
       link: '/app/companies/create?type=2',
       features: [
@@ -154,8 +175,8 @@ export default function App() {
     {
       id: 'plus',
       name: 'پلاس',
-      price: '۱۸ میلیون تومان',
-      originalPriceNum: 18000000,
+      price: planPriceLabel(3, '۱۸ میلیون تومان'),
+      originalPriceNum: (planPrices[3] ?? 180_000_000) / 10,
       period: 'در سال',
       link: '/app/companies/create?type=3',
       features: [
@@ -174,11 +195,11 @@ export default function App() {
     {
       id: 'pro',
       name: 'پرو',
-      price: '۲۸ میلیون تومان',
-      originalPriceNum: 28000000,
+      price: planPriceLabel(4, '۲۸ میلیون تومان'),
+      originalPriceNum: (planPrices[4] ?? 280_000_000) / 10,
       period: 'در سال',
       isPopular: true,
-      link: '/app/companies/create?type=3',
+      link: '/app/companies/create?type=4',
       features: [
         { text: 'محاسبه خودکار اقساط', included: true },
         { text: 'محاسبه خودکار جریمه دیرکرد', included: true },

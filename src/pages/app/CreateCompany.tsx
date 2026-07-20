@@ -145,7 +145,7 @@ export default function CreateCompany() {
 
           <button type="submit" disabled={busy}
             className="w-full bg-primary hover:bg-primary-hover text-white font-bold rounded-2xl py-3 transition-colors disabled:opacity-60">
-            {busy ? 'در حال ثبت…' : selectedType?.price ? `ساخت و پرداخت ${money(selectedType.price)} تومان` : 'ساخت کسب‌وکار'}
+            {busy ? 'در حال ثبت…' : selectedType?.price ? `ساخت و پرداخت ${money(selectedType.price / 10)} تومان` : 'ساخت کسب‌وکار'}
           </button>
         </form>
       </Card>
