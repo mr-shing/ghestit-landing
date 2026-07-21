@@ -18,6 +18,11 @@ import Tickets from './pages/app/Tickets';
 import TicketDetail from './pages/app/TicketDetail';
 import ChangePassword from './pages/app/ChangePassword';
 import PaymentResult from './pages/app/PaymentResult';
+import Referral from './pages/app/Referral';
+import { captureReferralCode } from './lib/referral';
+
+// Park an ?ref= invite before the router rewrites the URL; signup reads it back.
+captureReferralCode();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -45,6 +50,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="credits" element={<Credits />} />
             <Route path="companies" element={<Companies />} />
             <Route path="companies/create" element={<CreateCompany />} />
+            <Route path="referral" element={<Referral />} />
             <Route path="tickets" element={<Tickets />} />
             <Route path="tickets/:id" element={<TicketDetail />} />
             <Route path="change-password" element={<ChangePassword />} />

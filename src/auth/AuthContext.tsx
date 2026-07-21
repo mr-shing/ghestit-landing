@@ -2,6 +2,7 @@
 // flow: phone -> (existing user) OTP or password / (new user) signup -> JWT.
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { api, tokenStore } from '../lib/api';
+import { clearReferralCode, getReferralCode } from '../lib/referral';
 
 export type User = {
   id: number;
@@ -107,10 +108,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signup = useCallback(async (username: string, verifyToken: string, extra: Record<string, unknown> = {}): Promise<void> => {
-    const json = await api.post('site/signup', { SignupForm: { username, verifyToken, ...extra } }, {
+    // Whoever invited them, if anyone. Sent alongside the form (not inside it)
+    // because attribution is not part of SignupForm's validation.
+    const referralCode = getReferralCode();
+    const json = await api.post('site/signup', {
+      SignupForm: { username, verifyToken, ...extra },
+      ...(referralCode ? { referral_code: referralCode } : {}),
+    }, {
       auth: false,
       query: { username },
     });
+    // The invite has been handed over; keeping it would re-attribute a later
+    // signup on a shared device.
+    if (referralCode) clearReferralCode();
     persistAuth(json);
     setUser((json.user ?? json.data?.user ?? null) as User | null);
   }, []);

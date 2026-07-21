@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { Building2, CreditCard, KeyRound, LayoutList, LifeBuoy, LogOut, ChevronDown, Download } from 'lucide-react';
+import { Building2, CreditCard, Gift, KeyRound, LayoutList, LifeBuoy, LogOut, ChevronDown, Download } from 'lucide-react';
 import { useAuth, userDisplayName } from '../../auth/AuthContext';
 
 const navItems = [
   { to: '/app/installments', label: 'اقساط', icon: LayoutList },
   { to: '/app/credits', label: 'اعتبارها', icon: CreditCard },
   { to: '/app/companies', label: 'کسب‌وکارها', icon: Building2 },
+  { to: '/app/referral', label: 'دعوت دوستان', icon: Gift },
   { to: '/app/tickets', label: 'پشتیبانی', icon: LifeBuoy },
 ];
 
