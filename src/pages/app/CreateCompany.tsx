@@ -7,8 +7,17 @@ import { money } from '../../lib/format';
 import { Card, ErrorState, Loading, PageHeader, useFieldErrors, inputClass, FieldError } from './shared';
 import LocationPicker from './LocationPicker';
 
-type PlanType = { id: number; label: string; price: number; isPro: boolean };
-type FormMeta = { types: PlanType[]; categories: string[]; provinces: { id: number; name: string }[]; proType: number };
+type PlanType = { id: number; label: string; price: number; priceMonthly: number; priceYearly: number; isPro: boolean };
+type Cycle = { id: number; label: string };
+type FormMeta = {
+  types: PlanType[];
+  cycles: Cycle[];
+  categories: string[];
+  provinces: { id: number; name: string }[];
+  proType: number;
+  yearlyCycle: number;
+  monthlyCycle: number;
+};
 
 export default function CreateCompany() {
   const navigate = useNavigate();
@@ -16,6 +25,7 @@ export default function CreateCompany() {
   const { data: meta, loading, error, refetch } = useApi<FormMeta>('company/form-meta');
 
   const [type, setType] = useState<number | null>(null);
+  const [cycle, setCycle] = useState<number | null>(null);
   const [category, setCategory] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -40,6 +50,14 @@ export default function CreateCompany() {
     }
   }, [meta, type, searchParams]);
 
+  // Billing cycle from ?cycle= (the pricing page passes it), else annual.
+  useEffect(() => {
+    if (meta && cycle === null) {
+      const fromQuery = meta.cycles?.find((c) => c.id === Number(searchParams.get('cycle')));
+      setCycle(fromQuery?.id ?? meta.yearlyCycle);
+    }
+  }, [meta, cycle, searchParams]);
+
   // Load cities when province changes.
   useEffect(() => {
     setCityId('');
@@ -54,6 +72,12 @@ export default function CreateCompany() {
 
   const selectedType = useMemo(() => meta?.types.find((t) => t.id === type), [meta, type]);
   const isPro = !!selectedType?.isPro;
+  // Rial owed for the chosen plan on the chosen cycle.
+  const dueRial = !selectedType
+    ? 0
+    : cycle === meta?.monthlyCycle
+      ? selectedType.priceMonthly
+      : selectedType.priceYearly;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +88,7 @@ export default function CreateCompany() {
     try {
       const res = await api.post('company/create', {
         CompanyForm: {
-          type, business_category: category, name, phone,
+          type, expiration_type: cycle, business_category: category, name, phone,
           iban: isPro ? iban : '', province_id: provinceId, city_id: cityId,
           address, lat: loc.lat, long: loc.lng,
         },
@@ -108,10 +132,38 @@ export default function CreateCompany() {
                 }`}
               >
                 <div className="font-black text-slate-800">{t.label}</div>
-                <div className="text-[11px] text-slate-500 mt-1">{t.price ? `${money(t.price / 10000000)} م.ت / سال` : 'رایگان'}</div>
+                <div className="text-[11px] text-slate-500 mt-1">
+                  {t.priceYearly
+                    ? cycle === meta.monthlyCycle
+                      ? `${money(t.priceMonthly / 10000000)} م.ت / ماه`
+                      : `${money(t.priceYearly / 10000000)} م.ت / سال`
+                    : 'رایگان'}
+                </div>
               </button>
             ))}
           </div>
+
+          {/* Billing cycle — a demo has nothing to bill, so it stays hidden there. */}
+          {!!selectedType?.priceYearly && (
+            <div>
+              <Label text="دوره پرداخت" />
+              <div className="inline-flex bg-slate-100 rounded-xl p-1">
+                {meta.cycles?.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => setCycle(c.id)}
+                    aria-pressed={cycle === c.id}
+                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${
+                      cycle === c.id ? 'bg-white text-primary shadow-sm' : 'text-slate-500'
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <Select name="business_category" label="دسته‌بندی صنف" value={category} onChange={(v) => { setCategory(v); clearError('business_category'); }} error={fieldErrors.business_category} options={meta.categories.map((c) => ({ value: c, label: c }))} placeholder="انتخاب کنید" />
 
@@ -145,7 +197,7 @@ export default function CreateCompany() {
 
           <button type="submit" disabled={busy}
             className="w-full bg-primary hover:bg-primary-hover text-white font-bold rounded-2xl py-3 transition-colors disabled:opacity-60">
-            {busy ? 'در حال ثبت…' : selectedType?.price ? `ساخت و پرداخت ${money(selectedType.price / 10)} تومان` : 'ساخت کسب‌وکار'}
+            {busy ? 'در حال ثبت…' : dueRial ? `ساخت و پرداخت ${money(dueRial / 10)} تومان` : 'ساخت کسب‌وکار'}
           </button>
         </form>
       </Card>

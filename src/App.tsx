@@ -688,6 +688,12 @@ export default function App() {
                 <h2 className="text-2xl md:text-3xl font-black text-slate-900">
                   طرح‌ها و تعرفه‌های نرم‌افزار مدیریت هوشمند اقساط قسطیت
                 </h2>
+                <p className="text-sm text-slate-500 mt-3">
+                  با پرداخت سالانه ۲ ماه رایگان می‌گیرید.{' '}
+                  <Link to="/pricing" className="text-primary font-bold hover:underline">
+                    مقایسه کامل پلن‌ها و پرسش‌های رایج
+                  </Link>
+                </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
